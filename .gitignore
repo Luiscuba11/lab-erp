@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+
+# Environment secrets
+.env
+
+# Database files
+data/
+*.db
+*.db-shm
+*.db-wal
+
+# Backups
+backups/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Runtime
+.DS_Store
+Thumbs.db
+
+# PM2
+.pm2/

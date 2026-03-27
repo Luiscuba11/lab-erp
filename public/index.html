@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BIO PAP — Sistema de Laboratorio</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'%3E%3Crect width='80' height='80' rx='18' fill='%230c1a2e'/%3E%3Crect x='35' y='7' width='8' height='18' rx='4' fill='white' opacity='.95'/%3E%3Crect x='27' y='23' width='24' height='8' rx='4' fill='white' opacity='.95'/%3E%3Crect x='53' y='19' width='9' height='26' rx='4.5' fill='%2393c5fd' opacity='.7'/%3E%3Crect x='27' y='39' width='26' height='6' rx='3' fill='white' opacity='.95'/%3E%3Crect x='34' y='45' width='10' height='18' rx='5' fill='white' opacity='.95'/%3E%3Crect x='18' y='63' width='42' height='8' rx='4' fill='white' opacity='.95'/%3E%3Ccircle cx='46' cy='41' r='4' fill='%2393c5fd' opacity='.5'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════
+     PÁGINA DE INICIO DE SESIÓN
+═══════════════════════════════════════════════════ -->
+<div id="login-page" class="login-page">
+
+  <!-- Panel izquierdo — identidad de marca -->
+  <div class="login-brand">
+    <div class="brand-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="96" height="96">
+        <!-- Eyepiece -->
+        <rect x="44" y="6" width="10" height="22" rx="5" fill="white" opacity=".95"/>
+        <!-- Ocular tube / arm -->
+        <rect x="33" y="26" width="28" height="9" rx="4.5" fill="white" opacity=".95"/>
+        <!-- Fine adjustment knob highlight -->
+        <rect x="55" y="22" width="10" height="28" rx="5" fill="rgba(147,197,253,.65)"/>
+        <!-- Stage -->
+        <rect x="32" y="44" width="30" height="7" rx="3.5" fill="white" opacity=".95"/>
+        <!-- Body tube -->
+        <rect x="42" y="51" width="12" height="22" rx="6" fill="white" opacity=".95"/>
+        <!-- Base -->
+        <rect x="22" y="73" width="52" height="9" rx="4.5" fill="white" opacity=".95"/>
+        <!-- Illuminator glow -->
+        <circle cx="48" cy="43" r="5" fill="rgba(147,197,253,.5)"/>
+        <!-- Decorative lens ring -->
+        <circle cx="48" cy="43" r="3" fill="rgba(255,255,255,.7)"/>
+      </svg>
+    </div>
+    <div class="brand-name">BIO<span> PAP</span></div>
+    <div class="brand-fullname">Laboratorio de Análisis Clínico</div>
+    <div class="brand-tagline">✦ Prevenir es la Clave ✦</div>
+    <div class="brand-info">
+      <strong>Ubicación</strong>
+      Av. Mariscal Castilla N° 713, Huanta<br>
+      990 424 393 &nbsp;·&nbsp; biopap.huanta@gmail.com
+    </div>
+  </div>
+
+  <!-- Panel derecho — formulario -->
+  <div class="login-form-panel">
+    <div class="login-card">
+      <div class="login-card-title">Iniciar Sesión</div>
+      <div class="login-card-sub">Ingrese sus credenciales para acceder al sistema</div>
+      <div id="login-error" class="login-error"></div>
+      <form class="login-form" id="login-form">
+        <div class="form-group">
+          <label for="login-username">Usuario</label>
+          <input type="text" id="login-username" autocomplete="username" placeholder="Ingrese su usuario" required>
+        </div>
+        <div class="form-group">
+          <label for="login-password">Contraseña</label>
+          <input type="password" id="login-password" autocomplete="current-password" placeholder="Ingrese su contraseña" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block" style="padding:14px;font-size:14px;font-weight:700;letter-spacing:.3px;margin-top:4px;border-radius:10px;">Iniciar Sesión</button>
+      </form>
+      <div style="margin-top:28px;padding-top:20px;border-top:1px solid #f0f0f0;text-align:center;">
+        <p style="font-size:11px;color:#cbd5e1;line-height:1.8;">
+          BIO PAP — Sistema de Laboratorio Clínico
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     APLICACIÓN PRINCIPAL
+═══════════════════════════════════════════════════ -->
+<div id="app" class="app hidden">
+
+  <!-- Barra lateral -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <span class="logo-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="30" height="30"><rect x="44" y="6" width="10" height="22" rx="5" fill="white" opacity=".95"/><rect x="33" y="26" width="28" height="9" rx="4.5" fill="white" opacity=".95"/><rect x="55" y="22" width="10" height="28" rx="5" fill="rgba(147,197,253,.6)"/><rect x="32" y="44" width="30" height="7" rx="3.5" fill="white" opacity=".95"/><rect x="42" y="51" width="12" height="22" rx="6" fill="white" opacity=".95"/><rect x="22" y="73" width="52" height="9" rx="4.5" fill="white" opacity=".95"/><circle cx="48" cy="43" r="4" fill="rgba(147,197,253,.5)"/></svg></span>
+        <div>
+          <span class="logo-text">BIO PAP</span>
+          <span class="logo-sub">Laboratorio de Análisis Clínico</span>
+          <span class="logo-tagline">Prevenir es la Clave</span>
+        </div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav" id="sidebar-nav">
+      <!-- Generado por JS según rol -->
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-phone">📞 990 424 393</div>
+      <div class="user-chip">
+        <div class="user-avatar" id="user-avatar">?</div>
+        <div class="user-info-text">
+          <div class="user-name" id="sidebar-username">—</div>
+          <div class="user-role" id="sidebar-role">—</div>
+        </div>
+      </div>
+      <button class="btn btn-block btn-sm" id="logout-btn" style="background:rgba(255,255,255,.08);color:#94a3b8;border:1px solid rgba(255,255,255,.1);font-size:12px;letter-spacing:.3px;border-radius:8px;justify-content:center;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:2px"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Cerrar Sesión
+      </button>
+    </div>
+  </aside>
+
+  <!-- Área Principal -->
+  <div class="main-wrapper">
+
+    <!-- Barra Superior -->
+    <header class="top-bar">
+      <div class="breadcrumb" id="breadcrumb">Panel Principal</div>
+      <div class="top-bar-right">
+        <span id="current-datetime" style="background:var(--slate-100);padding:5px 12px;border-radius:8px;font-size:12px;font-weight:500;border:1px solid var(--border);color:var(--slate-600);"></span>
+        <!-- Notification Bell -->
+        <div class="notif-bell-wrap" style="position:relative;margin-left:12px;">
+          <button id="notif-bell" class="notif-bell-btn" onclick="Notifications.togglePanel()" title="Notificaciones">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <span id="notif-badge" class="notif-badge" style="display:none">0</span>
+          </button>
+          <!-- Dropdown panel -->
+          <div id="notif-panel" class="notif-panel hidden">
+            <div class="notif-panel-header">
+              <span style="font-weight:700;font-size:14px;">Notificaciones</span>
+              <button onclick="Notifications.markAllRead()" style="background:none;border:none;font-size:12px;color:var(--primary);cursor:pointer;padding:0">Marcar todas leídas</button>
+            </div>
+            <div id="notif-list" style="max-height:360px;overflow-y:auto;"></div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Secciones de Contenido -->
+    <main class="main-content">
+
+      <!-- ── Panel Principal ────────────────────────── -->
+      <section id="section-dashboard" class="section active">
+
+        <!-- Banner BIO PAP -->
+        <div class="dash-banner">
+          <div class="dash-banner-left">
+            <div class="banner-name">🔬 BIO PAP</div>
+            <div class="banner-fullname">Laboratorio de Análisis Clínico</div>
+            <div class="banner-tagline">✦ Prevenir es la Clave ✦</div>
+          </div>
+          <div class="dash-banner-right">
+            📍 Av. Mariscal Castilla N° 713, Huanta<br>
+            📞 990 424 393<br>
+            ✉ biopap.huanta@gmail.com
+          </div>
+        </div>
+
+        <div class="section-header">
+          <div class="section-title-block">
+            <h2>Panel Principal</h2>
+            <p>Bienvenido al Sistema BIO PAP — Resumen de actividad del laboratorio de hoy</p>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="Dashboard.load()">↻ Actualizar</button>
+        </div>
+
+        <div class="stats-grid" id="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Órdenes Hoy</div>
+            <div class="stat-value" id="stat-today">—</div>
+            <div class="stat-sub">Total recibidas</div>
+          </div>
+          <div class="stat-card orange">
+            <div class="stat-label">Pendientes / En Proceso</div>
+            <div class="stat-value" id="stat-pending">—</div>
+            <div class="stat-sub">Esperando resultados</div>
+          </div>
+          <div class="stat-card green">
+            <div class="stat-label">Completadas Hoy</div>
+            <div class="stat-value" id="stat-completed">—</div>
+            <div class="stat-sub">Resultados ingresados</div>
+          </div>
+          <div class="stat-card teal">
+            <div class="stat-label">Entregadas Hoy</div>
+            <div class="stat-value" id="stat-delivered">—</div>
+            <div class="stat-sub">Informes entregados</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Total Pacientes</div>
+            <div class="stat-value" id="stat-patients">—</div>
+            <div class="stat-sub" id="stat-patients-today">— registrado(s) hoy</div>
+          </div>
+        </div>
+
+        <!-- Alertas Críticas -->
+        <div id="critical-section" class="card mb-4 hidden">
+          <div class="card-header">
+            <span class="card-title" style="color:var(--danger);">⚠ Valores Críticos — Hoy</span>
+          </div>
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Paciente</th>
+                  <th>Orden</th>
+                  <th>Prueba</th>
+                  <th>Resultado</th>
+                  <th>Referencia</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody id="critical-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Alertas de Insumos (se muestra dinámicamente) -->
+        <div id="dash-supply-alerts" class="card mb-4 hidden"></div>
+
+        <!-- Órdenes Recientes -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Órdenes Recientes de Hoy</span>
+          </div>
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr><th>N° Orden</th><th>Paciente</th><th>Pruebas</th><th>Estado</th><th>Hora</th></tr>
+              </thead>
+              <tbody id="recent-orders-tbody">
+                <tr><td colspan="5" class="table-empty"><span class="empty-icon">📋</span>Sin órdenes hoy</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Pacientes ────────────────────────────────── -->
+      <section id="section-patients" class="section">
+        <div class="section-header">
+          <div class="section-title-block">
+            <h2>Gestión de Pacientes</h2>
+            <p>Registrar y gestionar fichas de pacientes</p>
+          </div>
+          <div class="flex gap-2">
+            <div class="search-bar">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="patient-search" placeholder="Buscar por nombre o N° documento..." oninput="Patients.search(this.value)">
+            </div>
+            <button class="btn btn-primary" id="btn-register-patient" onclick="Patients.openCreate()">+ Registrar Paciente</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr><th>Nombre</th><th>N° Documento</th><th>F. Nacimiento</th><th>Sexo</th><th>Contacto</th><th>Registrado</th><th>Acciones</th></tr>
+              </thead>
+              <tbody id="patients-tbody">
+                <tr><td colspan="7" class="table-empty"><span class="empty-icon">👤</span>No se encontraron pacientes</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Órdenes ─────────────────────────────────── -->
+      <section id="section-orders" class="section">
+        <div class="section-header">
+          <div class="section-title-block">
+            <h2>Gestión de Órdenes</h2>
+            <p>Crear y seguir órdenes de laboratorio</p>
+          </div>
+          <div class="flex gap-2 items-center">
+            <select id="order-status-filter" onchange="Orders.load()" style="padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:13px;">
+              <option value="">Todos los Estados</option>
+              <option value="PENDING">Pendiente</option>
+              <option value="IN_PROCESS">En Proceso</option>
+              <option value="COMPLETED">Completado</option>
+              <option value="DELIVERED">Entregado</option>
+            </select>
+            <button class="btn btn-primary" id="btn-create-order" onclick="Orders.openCreate()">+ Nueva Orden</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr><th>N° Orden</th><th>Paciente</th><th>Pruebas</th><th>Estado</th><th>Críticos</th><th>Total</th><th>Pago</th><th>Creado</th><th>Acciones</th></tr>
+              </thead>
+              <tbody id="orders-tbody">
+                <tr><td colspan="9" class="table-empty"><span class="empty-icon">📋</span>No se encontraron órdenes</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Ingreso de Resultados ──────────────────── -->
+      <section id="section-results" class="section">
+        <div class="section-header">
+          <div class="section-title-block">
+            <h2>Ingreso de Resultados</h2>
+            <p>Ingresar resultados de pruebas para órdenes pendientes</p>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="Results.loadEntry()">↻ Actualizar</button>
+        </div>
+        <div class="card">
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr><th>N° Orden</th><th>Paciente</th><th>Pruebas</th><th>Ingresadas</th><th>Estado</th><th>Acciones</th></tr>
+              </thead>
+              <tbody id="results-entry-tbody">
+                <tr><td colspan="6" class="table-empty"><span class="empty-icon">🧪</span>No hay órdenes pendientes</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Validación de Resultados ───────────────── -->
+      <section id="section-validation" class="section">
+        <div class="section-header">
+          <div class="section-title-block">
+            <h2>Validación de Resultados</h2>
+            <p>Revisar y validar resultados ingresados</p>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="Results.loadValidation()">↻ Actualizar</button>
+        </div>
+        <div class="card">
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr><th>N° Orden</th><th>Paciente</th><th>Pruebas</th><th>Validados</th><th>Estado</th><th>Acciones</th></tr>
+              </thead>
+              <tbody id="results-validation-tbody">
+                <tr><td colspan="6" class="table-empty"><span class="empty-icon">✅</span>No hay órdenes pendientes de validación</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Catálogo de Pruebas ─────────────────────── -->
+      <section id="section-catalog" class="section">
+        <div class="section-header">
+          <div class="section-title-block">
+            <h2>Catálogo de Pruebas</h2>
+            <p>Directorio de pruebas con rangos de referencia</p>
+          </div>
+          <div class="flex gap-2">
+            <div class="search-bar">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="catalog-search" placeholder="Buscar por nombre, código o muestra..." oninput="Catalog.filterTests(this.value)">
+            </div>
+            <button class="btn btn-primary" onclick="Catalog.openCreate()">+ Nueva Prueba</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Código</th>
+                  <th>Nombre de Prueba</th>
+                  <th>Muestra</th>
+                  <th>Unidad</th>
+                  <th>Rango Adulto Masc.</th>
+                  <th>Rango Adulto Fem.</th>
+                  <th>Precio</th>
+                  <th>Tiempo</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="catalog-tbody">
+                <tr><td colspan="9" class="table-empty"><span class="empty-icon">🔬</span>Cargando...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Control de Insumos ──────────────────────── -->
+      <section id="section-supplies" class="section">
+        <div class="section-header">
+          <div class="section-title-block">
+            <h2>Control de Insumos</h2>
+            <p>Stock, análisis ABC, vínculos con pruebas y órdenes de compra</p>
+          </div>
+          <div class="flex gap-2">
+            <button class="btn btn-outline btn-sm" onclick="Supplies.openReplenishReport()">🖨 Reposición</button>
+            <button class="btn btn-primary" id="btn-create-supply" onclick="Supplies.openCreate()">+ Nuevo Insumo</button>
+          </div>
+        </div>
+
+        <!-- Alerta de stock -->
+        <div id="supply-alerts-bar" class="hidden" style="margin-bottom:16px;"></div>
+
+        <!-- Sub-tabs -->
+        <div class="sup-tab-nav" style="display:flex;gap:4px;margin-bottom:16px;background:#f0f4f8;border-radius:var(--radius);padding:4px;">
+          <button class="sup-tab-btn active" data-tab="stock" onclick="Supplies.showTab('stock')">📦 Stock</button>
+          <button class="sup-tab-btn" data-tab="coverage" onclick="Supplies.showTab('coverage')">📅 Cobertura</button>
+          <button class="sup-tab-btn" data-tab="abc" onclick="Supplies.showTab('abc')">📊 Análisis ABC</button>
+          <button class="sup-tab-btn" data-tab="linkages" onclick="Supplies.showTab('linkages')">🔗 Vínculos con Pruebas</button>
+          <button class="sup-tab-btn" data-tab="po" onclick="Supplies.showTab('po')">🛒 Órdenes de Compra</button>
+        </div>
+
+        <!-- Tab: Stock -->
+        <div class="sup-tab-panel" data-tab="stock">
+          <div class="section-header" style="margin-bottom:12px;padding:0">
+            <div class="search-bar"><span class="search-icon">🔍</span>
+              <input type="text" id="supply-search" placeholder="Buscar insumo..." oninput="Supplies.filterSupplies(this.value)">
+            </div>
+          </div>
+          <div class="card">
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead><tr><th>Código</th><th>Nombre / Marca</th><th>Categoría</th><th style="text-align:right">Stock</th><th>Mín/Crít</th><th>Det/U</th><th>Precio/U</th><th>Estado</th><th>Acciones</th></tr></thead>
+                <tbody id="supplies-tbody"><tr><td colspan="9" class="table-empty"><span class="empty-icon">📦</span>Cargando...</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab: Coverage -->
+        <div class="sup-tab-panel hidden" data-tab="coverage">
+          <div class="card">
+            <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">Proyección de días de cobertura basada en consumo promedio de los últimos 30 días.</p>
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead><tr><th>Código</th><th>Nombre</th><th>Categoría</th><th style="text-align:right">Stock</th><th style="text-align:right">Cobertura</th><th>Estado</th></tr></thead>
+                <tbody id="supply-coverage-body"><tr><td colspan="6" class="table-empty">Cargando...</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab: ABC -->
+        <div class="sup-tab-panel hidden" data-tab="abc">
+          <div id="supply-abc-summary" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;"></div>
+          <div class="card">
+            <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">Clasificación ABC por valor de consumo en los últimos 90 días. A=70% del valor, B=siguiente 20%, C=restante 10%.</p>
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead><tr><th>#</th><th>Código</th><th>Nombre</th><th>Categoría</th><th style="text-align:right">Consumido</th><th style="text-align:right">Valor</th><th style="text-align:right">Acumulado%</th><th style="text-align:center">Clase</th></tr></thead>
+                <tbody id="supply-abc-body"><tr><td colspan="8" class="table-empty">Cargando...</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab: Linkages -->
+        <div class="sup-tab-panel hidden" data-tab="linkages">
+          <div class="section-header" style="padding:0;margin-bottom:12px;">
+            <span style="font-size:13px;color:var(--text-muted)">Configure qué insumos consume cada prueba y en qué cantidad.</span>
+            <button class="btn btn-primary btn-sm" onclick="Supplies.openAddLink()">+ Agregar Vínculo</button>
+          </div>
+          <div class="card">
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead><tr><th>Insumo</th><th>Código</th><th>Unidad</th><th style="text-align:center">Cant. por Prueba</th><th style="text-align:center">Acción</th></tr></thead>
+                <tbody id="supply-links-body"><tr><td colspan="5" class="table-empty">Cargando...</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab: Purchase Orders -->
+        <div class="sup-tab-panel hidden" data-tab="po">
+          <div class="section-header" style="padding:0;margin-bottom:12px;">
+            <span style="font-size:13px;color:var(--text-muted)">Gestione órdenes de compra para reabastecimiento de insumos.</span>
+            <button class="btn btn-primary btn-sm" onclick="Supplies.openCreatePO()">+ Nueva OC</button>
+          </div>
+          <div class="card">
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead><tr><th>N° OC</th><th>Proveedor</th><th>Fecha</th><th style="text-align:right">Ítems</th><th style="text-align:right">Total</th><th>Estado</th><th>Acciones</th></tr></thead>
+                <tbody id="supply-po-body"><tr><td colspan="7" class="table-empty">Cargando...</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ── Gestión de Usuarios ─────────────────────── -->
+      <section id="section-users" class="section">
+        <div class="section-header">
+          <div class="section-title-block">
+            <h2>Gestión de Usuarios</h2>
+            <p>Administrar usuarios y roles del sistema</p>
+          </div>
+          <button class="btn btn-primary" onclick="Users.openCreate()">+ Agregar Usuario</button>
+        </div>
+        <div class="card">
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr><th>Nombre</th><th>Usuario</th><th>Rol</th><th>Estado</th><th>Creado</th><th>Acciones</th></tr>
+              </thead>
+              <tbody id="users-tbody">
+                <tr><td colspan="6" class="table-empty"><span class="empty-icon">👥</span>No se encontraron usuarios</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Caja / Cobros ─────────────────────────────────────────────── -->
+      <section id="section-billing" class="section">
+        <div class="section-header">
+          <div class="section-title-block">
+            <h2>Caja / Cobros</h2>
+            <p>Gestión de pagos y estado de facturación</p>
+          </div>
+          <div class="flex gap-2">
+            <button class="btn btn-outline btn-sm" id="billing-tab-pending" onclick="Billing.showTab('pending')" style="background:var(--primary);color:#fff;">Pendientes</button>
+            <button class="btn btn-outline btn-sm" id="billing-tab-history" onclick="Billing.showTab('history')">Historial</button>
+          </div>
+        </div>
+
+        <!-- Tab: Pending -->
+        <div id="billing-pending-panel">
+          <div class="card">
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>N° Orden</th>
+                    <th>Paciente</th>
+                    <th>Pruebas</th>
+                    <th>Estado Orden</th>
+                    <th style="text-align:right">Total</th>
+                    <th>Pago</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="billing-pending-tbody">
+                  <tr><td colspan="7" class="table-empty"><span class="empty-icon">💰</span>No hay órdenes pendientes de pago</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab: History -->
+        <div id="billing-history-panel" class="hidden">
+          <div class="section-header" style="margin-bottom:12px;">
+            <div class="flex gap-2" style="align-items:center;">
+              <label style="font-size:13px;color:var(--text-muted);">Desde:</label>
+              <input type="date" id="billing-from" style="padding:6px 10px;border:1.5px solid var(--border);border-radius:6px;font-size:13px;">
+              <label style="font-size:13px;color:var(--text-muted);">Hasta:</label>
+              <input type="date" id="billing-to" style="padding:6px 10px;border:1.5px solid var(--border);border-radius:6px;font-size:13px;">
+              <button class="btn btn-primary btn-sm" onclick="Billing.loadHistory()">Buscar</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>N° Orden</th>
+                    <th>Paciente</th>
+                    <th>Fecha</th>
+                    <th style="text-align:right">Total</th>
+                    <th>Método</th>
+                    <th>Estado Pago</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="billing-history-tbody">
+                  <tr><td colspan="7" class="table-empty"><span class="empty-icon">📋</span>Seleccione un rango de fechas</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Finanzas ─────────────────────────────────────────── -->
+      <section id="section-finance" class="section">
+        <div class="section-header">
+          <div class="section-title-block">
+            <h2>Dashboard Financiero</h2>
+            <p>Resumen de ingresos y estadísticas financieras</p>
+          </div>
+        </div>
+
+        <!-- Summary cards -->
+        <div id="finance-summary" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:24px;"></div>
+
+        <!-- Charts row -->
+        <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:24px;">
+          <div class="card">
+            <h3 style="margin-bottom:12px;font-size:14px;color:var(--text-muted);font-weight:600;">INGRESOS ÚLTIMOS 30 DÍAS</h3>
+            <div id="finance-bar-chart" style="height:200px;display:flex;align-items:flex-end;gap:3px;overflow-x:auto;"></div>
+          </div>
+          <div class="card">
+            <h3 style="margin-bottom:12px;font-size:14px;color:var(--text-muted);font-weight:600;">MÉTODOS DE PAGO</h3>
+            <div id="finance-payment-methods"></div>
+          </div>
+        </div>
+
+        <!-- Top tests table -->
+        <div class="card" style="margin-bottom:24px;">
+          <h3 style="margin-bottom:12px;font-size:14px;color:var(--text-muted);font-weight:600;">PRUEBAS MÁS SOLICITADAS (POR INGRESO)</h3>
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Prueba</th>
+                  <th style="text-align:right">Cantidad</th>
+                  <th style="text-align:right">Ingreso Total</th>
+                </tr>
+              </thead>
+              <tbody id="finance-top-tests-tbody">
+                <tr><td colspan="4" class="table-empty">Cargando...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- P&L y Gastos Fijos -->
+        <div id="finance-pnl-section">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <h3 style="font-size:14px;color:var(--text-muted);font-weight:600;text-transform:uppercase;">RESULTADO (P&L) — MES ACTUAL</h3>
+          </div>
+          <div id="finance-pnl-cards" class="pnl-grid"></div>
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+              <h3 style="font-size:14px;color:var(--text-muted);font-weight:600;">GASTOS FIJOS REGISTRADOS</h3>
+              <button class="btn btn-sm btn-primary" onclick="Finance.openFixedCost()">+ Agregar Gasto</button>
+            </div>
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr><th>Tipo</th><th>Descripción</th><th style="text-align:right">Monto</th><th>Período</th><th>Mensual Equiv.</th><th></th></tr>
+                </thead>
+                <tbody id="finance-fixed-costs-tbody">
+                  <tr><td colspan="6" class="table-empty">Cargando...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Export -->
+        <div class="card" style="margin-top:24px;">
+          <h3 style="margin-bottom:12px;font-size:14px;color:var(--text-muted);font-weight:600;">EXPORTAR COBROS</h3>
+          <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;">
+            <div class="form-group" style="margin:0;">
+              <label>Desde</label>
+              <input type="date" id="fin-export-from">
+            </div>
+            <div class="form-group" style="margin:0;">
+              <label>Hasta</label>
+              <input type="date" id="fin-export-to">
+            </div>
+            <button class="btn btn-outline" onclick="Finance.export()">📥 Exportar CSV</button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     MODALES
+═══════════════════════════════════════════════════ -->
+
+<!-- Modal Paciente -->
+<div id="modal-overlay-patient" class="modal-overlay hidden" onclick="App.closeModalOverlay(event, 'modal-overlay-patient')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3 id="patient-modal-title">Registrar Paciente</h3>
+      <button class="modal-close" onclick="App.closeModal('modal-overlay-patient')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="patient-edit-id">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Nombre Completo *</label>
+          <input type="text" id="patient-name" placeholder="Nombre legal completo">
+        </div>
+        <div class="form-group">
+          <label>Fecha de Nacimiento *</label>
+          <input type="date" id="patient-dob">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Sexo *</label>
+          <select id="patient-gender">
+            <option value="">— Seleccionar —</option>
+            <option value="M">Masculino</option>
+            <option value="F">Femenino</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>N° Documento *</label>
+          <input type="text" id="patient-id-number" placeholder="DNI / Cédula / Pasaporte">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Contacto (Teléfono / Correo)</label>
+        <input type="text" id="patient-contact" placeholder="Opcional">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="App.closeModal('modal-overlay-patient')">Cancelar</button>
+      <button class="btn btn-primary" onclick="Patients.submit()">Guardar Paciente</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Orden -->
+<div id="modal-overlay-order" class="modal-overlay hidden" onclick="App.closeModalOverlay(event, 'modal-overlay-order')">
+  <div class="modal modal-wide" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Crear Orden de Laboratorio</h3>
+      <button class="modal-close" onclick="App.closeModal('modal-overlay-order')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Paciente *</label>
+        <div class="patient-search-wrapper">
+          <input type="text" id="order-patient-search" placeholder="Escriba nombre o N° documento para buscar paciente..." autocomplete="off" oninput="Orders.searchPatient(this.value)">
+          <div id="order-patient-dropdown" class="search-dropdown hidden"></div>
+        </div>
+        <div id="order-selected-patient" class="hidden" style="margin-top:8px;"></div>
+        <input type="hidden" id="order-patient-id">
+      </div>
+      <div class="form-group">
+        <label>Notas</label>
+        <textarea id="order-notes" rows="2" placeholder="Notas clínicas opcionales..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Seleccionar Pruebas * <span class="text-muted text-sm" id="test-count-label"></span></label>
+        <div id="test-catalog-selector" class="test-selector"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="App.closeModal('modal-overlay-order')">Cancelar</button>
+      <button class="btn btn-primary" onclick="Orders.submit()">Crear Orden</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Ingreso de Resultados -->
+<div id="modal-overlay-result" class="modal-overlay hidden" onclick="App.closeModalOverlay(event, 'modal-overlay-result')">
+  <div class="modal modal-wide" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3 id="result-modal-title">Ingresar Resultados</h3>
+      <button class="modal-close" onclick="App.closeModal('modal-overlay-result')">✕</button>
+    </div>
+    <div class="modal-body" id="result-modal-body">
+      <!-- Generado por JS -->
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="App.closeModal('modal-overlay-result')">Cerrar</button>
+      <button class="btn btn-primary" id="btn-save-results" onclick="Results.saveEntries()">Guardar Resultados</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Validación -->
+<div id="modal-overlay-validation" class="modal-overlay hidden" onclick="App.closeModalOverlay(event, 'modal-overlay-validation')">
+  <div class="modal modal-wide" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3 id="validation-modal-title">Validar Resultados</h3>
+      <button class="modal-close" onclick="App.closeModal('modal-overlay-validation')">✕</button>
+    </div>
+    <div class="modal-body" id="validation-modal-body">
+      <!-- Generado por JS -->
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="App.closeModal('modal-overlay-validation')">Cerrar</button>
+      <button class="btn btn-success" id="btn-validate-all" onclick="Results.validateAll()">✓ Validar Todo &amp; Entregar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Usuario -->
+<div id="modal-overlay-user" class="modal-overlay hidden" onclick="App.closeModalOverlay(event, 'modal-overlay-user')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3 id="user-modal-title">Agregar Usuario</h3>
+      <button class="modal-close" onclick="App.closeModal('modal-overlay-user')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="user-edit-id">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Nombre Completo *</label>
+          <input type="text" id="user-fullname" placeholder="Nombre completo">
+        </div>
+        <div class="form-group">
+          <label>Usuario *</label>
+          <input type="text" id="user-username" placeholder="Nombre de usuario">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Contraseña <span id="pwd-label-hint" class="text-muted">(requerida para nuevo usuario)</span></label>
+          <input type="password" id="user-password" placeholder="Mín. 6 caracteres">
+        </div>
+        <div class="form-group">
+          <label>Rol *</label>
+          <select id="user-role">
+            <option value="">— Seleccionar Rol —</option>
+            <option value="RECEPTIONIST">Recepcionista</option>
+            <option value="TECHNICIAN">Técnico</option>
+            <option value="BIOCHEMIST">Bioquímico</option>
+            <option value="ADMIN">Administrador</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="App.closeModal('modal-overlay-user')">Cancelar</button>
+      <button class="btn btn-primary" onclick="Users.submit()">Guardar Usuario</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Historial Paciente -->
+<div id="modal-overlay-history" class="modal-overlay hidden" onclick="App.closeModalOverlay(event, 'modal-overlay-history')">
+  <div class="modal modal-wide" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3 id="history-modal-title">Historial del Paciente</h3>
+      <button class="modal-close" onclick="App.closeModal('modal-overlay-history')">✕</button>
+    </div>
+    <div class="modal-body" id="history-modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="App.closeModal('modal-overlay-history')">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Catálogo (Crear/Editar Prueba) -->
+<div id="modal-overlay-catalog" class="modal-overlay hidden" onclick="App.closeModalOverlay(event, 'modal-overlay-catalog')">
+  <div class="modal modal-xl" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3 id="catalog-modal-title">Nueva Prueba</h3>
+      <button class="modal-close" onclick="App.closeModal('modal-overlay-catalog')">✕</button>
+    </div>
+    <div class="modal-body" id="catalog-modal-body"></div>
+    <div class="modal-footer" id="catalog-modal-footer">
+      <button class="btn btn-secondary" onclick="App.closeModal('modal-overlay-catalog')">Cancelar</button>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-outline hidden" id="cat-btn-prev" onclick="Catalog.prevStep()">← Anterior</button>
+        <button class="btn btn-primary" id="cat-btn-next" onclick="Catalog.nextStep()">Siguiente →</button>
+        <button class="btn btn-primary hidden" id="cat-btn-save" onclick="Catalog.submit()">💾 Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Insumo (Crear/Editar) -->
+<div id="modal-overlay-supply" class="modal-overlay hidden" onclick="App.closeModalOverlay(event, 'modal-overlay-supply')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3 id="supply-modal-title">Nuevo Insumo</h3>
+      <button class="modal-close" onclick="App.closeModal('modal-overlay-supply')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Código *</label>
+          <input type="text" id="sup-code" placeholder="Ej: REAG011" style="text-transform:uppercase">
+        </div>
+        <div class="form-group">
+          <label>Nombre *</label>
+          <input type="text" id="sup-name" placeholder="Nombre del insumo">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Categoría *</label>
+          <select id="sup-category">
+            <option value="">— Seleccionar —</option>
+            <option value="Reactivos">Reactivos</option>
+            <option value="Material de laboratorio">Material de laboratorio</option>
+            <option value="EPP">EPP</option>
+            <option value="Tiras reactivas">Tiras reactivas</option>
+            <option value="Soluciones">Soluciones</option>
+            <option value="Equipos">Equipos</option>
+            <option value="Otros">Otros</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Unidad de Medida *</label>
+          <input type="text" id="sup-unit" placeholder="Ej: mL, unidad, caja">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Stock Mínimo (alerta BAJO)</label>
+          <input type="number" id="sup-min" value="0" min="0" step="any">
+        </div>
+        <div class="form-group">
+          <label>Stock Crítico (alerta CRÍTICO)</label>
+          <input type="number" id="sup-critical" value="0" min="0" step="any">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Marca</label>
+          <input type="text" id="sup-brand" placeholder="Ej: Wiener Lab, BD">
+        </div>
+        <div class="form-group">
+          <label>Precio por Unidad (S/)</label>
+          <input type="number" id="sup-price" value="0" min="0" step="0.01">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Determinaciones por Unidad</label>
+          <input type="number" id="sup-determ" value="1" min="1" step="1" title="N° de pruebas que permite una unidad de este insumo">
+        </div>
+        <div class="form-group">
+          <label>Tiempo Entrega (días)</label>
+          <input type="number" id="sup-lead" value="7" min="0" step="1">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Proveedor</label>
+        <input type="text" id="sup-supplier" placeholder="Nombre del proveedor (opcional)">
+      </div>
+      <div class="form-group">
+        <label>Notas</label>
+        <input type="text" id="sup-notes" placeholder="Observaciones adicionales">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="App.closeModal('modal-overlay-supply')">Cancelar</button>
+      <button class="btn btn-primary" onclick="Supplies.submitSupply()">Guardar Insumo</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Movimiento de Stock -->
+<div id="modal-overlay-movement" class="modal-overlay hidden" onclick="App.closeModalOverlay(event, 'modal-overlay-movement')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Registrar Movimiento de Stock</h3>
+      <button class="modal-close" onclick="App.closeModal('modal-overlay-movement')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-weight:600;margin-bottom:12px;" id="mov-supply-name">—</p>
+      <p class="text-muted text-sm" id="mov-current-stock" style="margin-bottom:16px;"></p>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Tipo de Movimiento *</label>
+          <select id="mov-type">
+            <option value="IN">▲ Entrada (Ingreso)</option>
+            <option value="OUT">▼ Salida (Consumo)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Cantidad * <span id="mov-unit-label" class="text-muted"></span></label>
+          <input type="number" id="mov-quantity" min="0.01" step="any" placeholder="0">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Motivo</label>
+        <input type="text" id="mov-reason" placeholder="Ej: Compra de proveedor, consumo rutinario...">
+      </div>
+      <div class="form-group">
+        <label>Referencia (N° Factura / Orden)</label>
+        <input type="text" id="mov-reference" placeholder="Opcional">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="App.closeModal('modal-overlay-movement')">Cancelar</button>
+      <button class="btn btn-primary" onclick="Supplies.submitMovement()">Registrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Historial de Insumo -->
+<div id="modal-overlay-supply-history" class="modal-overlay hidden" onclick="App.closeModalOverlay(event, 'modal-overlay-supply-history')">
+  <div class="modal modal-wide" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3 id="history-supply-title">Historial de Movimientos</h3>
+      <button class="modal-close" onclick="App.closeModal('modal-overlay-supply-history')">✕</button>
+    </div>
+    <div class="modal-body" id="history-supply-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="App.closeModal('modal-overlay-supply-history')">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Vínculo Prueba-Insumo -->
+<div id="modal-overlay-supply-link" class="modal-overlay hidden" onclick="App.closeModalOverlay(event, 'modal-overlay-supply-link')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Vincular Prueba con Insumo</h3>
+      <button class="modal-close" onclick="App.closeModal('modal-overlay-supply-link')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Prueba *</label>
+        <select id="link-test-select"><option value="">— Seleccionar prueba —</option></select>
+      </div>
+      <div class="form-group">
+        <label>Insumo *</label>
+        <select id="link-supply-select"><option value="">— Seleccionar insumo —</option></select>
+      </div>
+      <div class="form-group">
+        <label>Cantidad por Prueba *</label>
+        <input type="number" id="link-qty" value="1" min="0.001" step="any" placeholder="Ej: 1, 0.5, 2">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="App.closeModal('modal-overlay-supply-link')">Cancelar</button>
+      <button class="btn btn-primary" onclick="Supplies.submitLink()">Vincular</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Crear Orden de Compra -->
+<div id="modal-overlay-po" class="modal-overlay hidden" onclick="App.closeModalOverlay(event, 'modal-overlay-po')">
+  <div class="modal modal-wide" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Nueva Orden de Compra</h3>
+      <button class="modal-close" onclick="App.closeModal('modal-overlay-po')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Proveedor *</label>
+          <input type="text" id="po-supplier" placeholder="Nombre del proveedor">
+        </div>
+        <div class="form-group">
+          <label>Notas</label>
+          <input type="text" id="po-notes" placeholder="Observaciones opcionales">
+        </div>
+      </div>
+      <div style="margin-top:12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <strong>Ítems</strong>
+          <button class="btn btn-sm btn-secondary" onclick="Supplies.addPOItem()">+ Agregar ítem</button>
+        </div>
+        <div id="po-items-list">
+          <div class="text-muted text-sm" style="padding:12px 0;">Agregue al menos un ítem.</div>
+        </div>
+        <div style="text-align:right;margin-top:8px;font-weight:600;"><span id="po-total">Total: S/. 0.00</span></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="App.closeModal('modal-overlay-po')">Cancelar</button>
+      <button class="btn btn-primary" onclick="Supplies.submitPO()">Crear Orden</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Detalle Orden de Compra -->
+<div id="modal-overlay-po-detail" class="modal-overlay hidden" onclick="App.closeModalOverlay(event, 'modal-overlay-po-detail')">
+  <div class="modal modal-wide" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3 id="po-detail-title">Orden de Compra</h3>
+      <button class="modal-close" onclick="App.closeModal('modal-overlay-po-detail')">✕</button>
+    </div>
+    <div class="modal-body" id="po-detail-body"></div>
+    <div class="modal-footer" id="po-detail-footer">
+      <button class="btn btn-secondary" onclick="App.closeModal('modal-overlay-po-detail')">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Gasto Fijo -->
+<div id="modal-overlay-fixed-cost" class="modal-overlay hidden" onclick="App.closeModalOverlay(event, 'modal-overlay-fixed-cost')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3 id="fixed-cost-title">Nuevo Gasto Fijo</h3>
+      <button class="modal-close" onclick="App.closeModal('modal-overlay-fixed-cost')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Tipo</label>
+          <select id="fc-type">
+            <option value="PERSONAL">Personal / Haberes</option>
+            <option value="LOCAL">Local / Alquiler</option>
+            <option value="SERVICIOS">Servicios (Luz, Agua, Internet)</option>
+            <option value="IMPUESTOS">Impuestos / Tributos</option>
+            <option value="EQUIPOS">Equipos / Mantenimiento</option>
+            <option value="OTRO">Otro</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Período</label>
+          <select id="fc-period">
+            <option value="MENSUAL">Mensual</option>
+            <option value="ANUAL">Anual (se prorratea)</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Descripción *</label>
+        <input type="text" id="fc-description" placeholder="Ej: Sueldo Bioquímico, Alquiler local...">
+      </div>
+      <div class="form-group">
+        <label>Monto (S/) *</label>
+        <input type="number" id="fc-amount" value="0" min="0" step="0.01">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="App.closeModal('modal-overlay-fixed-cost')">Cancelar</button>
+      <button class="btn btn-primary" onclick="Finance.submitFixedCost()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Cobro de Pago -->
+<div id="modal-overlay-billing-pay" class="modal-overlay hidden" onclick="App.closeModalOverlay(event, 'modal-overlay-billing-pay')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3 id="billing-pay-title">Registrar Pago</h3>
+      <button class="modal-close" onclick="App.closeModal('modal-overlay-billing-pay')">✕</button>
+    </div>
+    <div class="modal-body" id="billing-pay-body">
+      <div class="form-group">
+        <label>Total a Cobrar</label>
+        <div id="billing-pay-total" style="font-size:24px;font-weight:700;color:var(--primary);padding:8px 0;"></div>
+      </div>
+      <div class="form-group">
+        <label>Método de Pago *</label>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px;" id="billing-method-btns">
+          <button type="button" class="pay-method-btn" data-method="Efectivo" onclick="Billing.selectMethod('Efectivo')" style="padding:10px;border:2px solid var(--border);border-radius:8px;cursor:pointer;background:#fff;font-weight:600;font-size:13px;">💵 Efectivo</button>
+          <button type="button" class="pay-method-btn" data-method="Yape" onclick="Billing.selectMethod('Yape')" style="padding:10px;border:2px solid var(--border);border-radius:8px;cursor:pointer;background:#fff;font-weight:600;font-size:13px;">📱 Yape</button>
+          <button type="button" class="pay-method-btn" data-method="Plin" onclick="Billing.selectMethod('Plin')" style="padding:10px;border:2px solid var(--border);border-radius:8px;cursor:pointer;background:#fff;font-weight:600;font-size:13px;">📱 Plin</button>
+          <button type="button" class="pay-method-btn" data-method="Transferencia" onclick="Billing.selectMethod('Transferencia')" style="padding:10px;border:2px solid var(--border);border-radius:8px;cursor:pointer;background:#fff;font-weight:600;font-size:13px;">🏦 Transferencia</button>
+          <button type="button" class="pay-method-btn" data-method="Crédito" onclick="Billing.selectMethod('Crédito')" style="padding:10px;border:2px solid var(--border);border-radius:8px;cursor:pointer;background:#fff;font-weight:600;font-size:13px;">📝 Crédito</button>
+          <button type="button" class="pay-method-btn" data-method="Exonerado" onclick="Billing.selectMethod('Exonerado')" style="padding:10px;border:2px solid var(--border);border-radius:8px;cursor:pointer;background:#fff;font-weight:600;font-size:13px;">✅ Exonerado</button>
+        </div>
+        <input type="hidden" id="billing-selected-method" value="">
+      </div>
+      <div class="form-group">
+        <label>Notas (opcional)</label>
+        <input type="text" id="billing-pay-notes" placeholder="Ej: Pago parcial, factura #..." style="width:100%;padding:8px 12px;border:1.5px solid var(--border);border-radius:6px;font-size:14px;">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="App.closeModal('modal-overlay-billing-pay')">Cancelar</button>
+      <button class="btn btn-primary" id="btn-confirm-pay" onclick="Billing.confirmPay()">Confirmar Pago</button>
+    </div>
+  </div>
+</div>
+
+<!-- Contenedor de Notificaciones -->
+<div id="toast-container"></div>
+
+<!-- Scripts -->
+<script src="/js/api.js"></script>
+<script src="/js/app.js"></script>
+<script src="/js/dashboard.js"></script>
+<script src="/js/patients.js"></script>
+<script src="/js/orders.js"></script>
+<script src="/js/results.js"></script>
+<script src="/js/catalog.js"></script>
+<script src="/js/supplies.js"></script>
+<script src="/js/users.js"></script>
+<script src="/js/billing.js"></script>
+<script src="/js/finance.js"></script>
+<script src="/js/notifications.js"></script>
+
+</body>
+</html>
