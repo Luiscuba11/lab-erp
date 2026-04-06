@@ -1,0 +1,27 @@
+name: Deploy BIO PAP to Oracle Cloud
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v3
+
+      - name: Deploy al servidor Oracle
+        uses: appleboy/ssh-action@master
+        with:
+          host: 163.176.246.123
+          username: ubuntu
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd ~/lab-erp
+            git pull origin main
+            npm install --production
+            pm2 restart biopap
+            sudo cp -r ~/lab-erp/public/* /var/www/biopap/
+            echo "✅ Deploy completado: $(date)"
