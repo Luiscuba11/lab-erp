@@ -358,6 +358,11 @@ html, body {
   font-weight: 700;
 }
 
+a.nav-item {
+  text-decoration: none;
+  color: inherit;
+}
+
 .nav-item {
   display: flex;
   align-items: center;
@@ -1671,4 +1676,125 @@ table.data-table tbody tr:last-child td { border-bottom: none; }
   .sidebar { width: 100%; height: auto; }
   .main-content { padding: 16px; }
   .stats-grid { grid-template-columns: 1fr; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE MÓVIL — BIO PAP
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─── Hamburger button (oculto en desktop) ──────────────────────────────── */
+.menu-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 40px;
+  height: 40px;
+  padding: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: background var(--transition);
+  flex-shrink: 0;
+}
+.menu-toggle:hover { background: rgba(255,255,255,.08); }
+.menu-toggle span {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: var(--slate-300);
+  border-radius: 2px;
+  transition: var(--transition);
+}
+
+/* ─── Sidebar overlay ───────────────────────────────────────────────────── */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.5);
+  z-index: 99;
+  opacity: 0;
+  transition: opacity var(--transition-md);
+}
+.sidebar-overlay.active {
+  display: block;
+  opacity: 1;
+}
+
+/* ─── Breakpoint tablet (≤ 900px) ───────────────────────────────────────── */
+@media (max-width: 900px) {
+  :root { --sidebar-w: 220px; }
+  .section-header { flex-wrap: wrap; gap: 10px; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table { min-width: 600px; }
+}
+
+/* ─── Breakpoint móvil (≤ 768px) ────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .menu-toggle { display: flex; }
+
+  .sidebar {
+    position: fixed !important;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    z-index: 100;
+    transform: translateX(-100%);
+    transition: transform var(--transition-md);
+    box-shadow: none;
+    width: 260px !important;
+  }
+  .sidebar.open {
+    transform: translateX(0);
+    box-shadow: 4px 0 24px rgba(0,0,0,.4);
+  }
+
+  .app { flex-direction: column; }
+  .main-content, main { width: 100% !important; margin-left: 0 !important; padding: 0 !important; }
+
+  .topbar, .top-bar { padding: 0 12px; gap: 8px; }
+  .topbar .breadcrumb, .top-bar .breadcrumb { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; }
+  #current-datetime { display: none; }
+
+  .section { padding: 16px 12px; }
+  .section-header { flex-direction: column; align-items: flex-start; gap: 10px; margin-bottom: 16px; }
+  .section-header h2 { font-size: 20px; }
+
+  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .stat-card { padding: 14px 12px; }
+  .stat-value { font-size: 28px; }
+
+  .table-wrapper, .table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: var(--radius); }
+  table { min-width: 560px; font-size: 13px; }
+  th, td { padding: 10px; }
+
+  .btn { min-height: 40px; padding: 8px 14px; font-size: 13px; }
+
+  .modal-overlay { align-items: flex-end; padding: 0; }
+  .modal, .modal-content { width: 100% !important; max-width: 100% !important; border-radius: var(--radius-lg) var(--radius-lg) 0 0 !important; max-height: 90vh; overflow-y: auto; }
+
+  .form-grid, .form-row { grid-template-columns: 1fr !important; }
+
+  .dashboard-banner { padding: 20px 16px; }
+  .dashboard-banner h2 { font-size: 22px; }
+
+  .filters-bar, .search-bar { flex-wrap: wrap; gap: 8px; }
+  .search-bar input { width: 100%; }
+  .action-buttons { display: flex; flex-wrap: wrap; gap: 4px; }
+  .sidebar-footer { padding: 12px; }
+}
+
+/* ─── Breakpoint móvil pequeño (≤ 480px) ────────────────────────────────── */
+@media (max-width: 480px) {
+  .stats-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .stat-card { padding: 12px 10px; }
+  .stat-value { font-size: 24px; }
+  .section { padding: 12px 10px; }
+  table { font-size: 12px; }
+  th, td { padding: 8px; }
+  .btn { font-size: 12px; padding: 7px 12px; }
+  .modal, .modal-content { max-height: 95vh; }
 }

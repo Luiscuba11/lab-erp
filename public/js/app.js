@@ -17,10 +17,12 @@ const App = (() => {
       { id: 'dashboard', label: 'Panel Principal',         icon: '📊' },
       { id: 'results',   label: 'Ingreso de Resultados',   icon: '🧪' },
       { id: 'supplies',  label: 'Control de Insumos',      icon: '📦' },
+      { url: '/pap-generator', label: 'Generador PAP',     icon: '🦠' },
     ],
     BIOCHEMIST: [
       { id: 'dashboard',   label: 'Panel Principal',       icon: '📊' },
       { id: 'validation',  label: 'Validación',            icon: '✅' },
+      { url: '/pap-generator', label: 'Generador PAP',     icon: '🦠' },
     ],
     ADMIN: [
       { id: 'dashboard',   label: 'Panel Principal',       icon: '🏠' },
@@ -33,6 +35,7 @@ const App = (() => {
       { id: 'users',       label: 'Usuarios',              icon: '👥' },
       { id: 'billing',     label: 'Caja / Cobros',         icon: '💰' },
       { id: 'finance',     label: 'Finanzas',              icon: '📊' },
+      { url: '/pap-generator', label: 'Generador PAP',     icon: '🦠' },
     ]
   };
 
@@ -120,12 +123,19 @@ const App = (() => {
   function buildSidebar(user) {
     const nav = document.getElementById('sidebar-nav');
     const items = NAV_CONFIG[user.role] || [];
-    nav.innerHTML = items.map(item => `
-      <div class="nav-item" id="nav-${item.id}" onclick="App.showSection('${item.id}')">
-        <span class="nav-icon">${item.icon}</span>
-        <span class="nav-label">${item.label}</span>
-      </div>
-    `).join('');
+    nav.innerHTML = items.map(item => item.url
+      ? `<a class="nav-item nav-item--link" href="${item.url}" target="_blank" rel="noopener noreferrer">
+           <span class="nav-icon">${item.icon}</span>
+           <span class="nav-label">${item.label}</span>
+         </a>`
+      : `<div class="nav-item" id="nav-${item.id}" data-section="${item.id}">
+           <span class="nav-icon">${item.icon}</span>
+           <span class="nav-label">${item.label}</span>
+         </div>`
+    ).join('');
+    nav.querySelectorAll('.nav-item[data-section]').forEach(function(el) {
+      el.addEventListener('click', function() { App.showSection(el.getAttribute('data-section')); });
+    });
   }
 
   function roleLabel(role) {
@@ -264,3 +274,38 @@ const App = (() => {
 
 // Boot on DOM ready
 document.addEventListener('DOMContentLoaded', () => App.init());
+
+// ─── Mobile sidebar drawer ────────────────────────────────────────────────
+(function initMobileDrawer() {
+  const toggle   = document.getElementById('menu-toggle');
+  const sidebar  = document.querySelector('.sidebar, aside');
+  const overlay  = document.getElementById('sidebar-overlay');
+  if (!toggle || !sidebar) return;
+
+  function openDrawer() {
+    sidebar.classList.add('open');
+    if (overlay) overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDrawer() {
+    sidebar.classList.remove('open');
+    if (overlay) overlay.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  toggle.addEventListener('click', function() {
+    sidebar.classList.contains('open') ? closeDrawer() : openDrawer();
+  });
+
+  if (overlay) overlay.addEventListener('click', closeDrawer);
+
+  document.addEventListener('click', function(e) {
+    const navItem = e.target.closest('.nav-item');
+    if (navItem && window.innerWidth <= 768) closeDrawer();
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeDrawer();
+  });
+})();

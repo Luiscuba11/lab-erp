@@ -13,6 +13,9 @@ const { applySecurityMiddleware }   = require('./src/middleware/security');
 const app  = express();
 const PORT = process.env.PORT || 3004;
 
+// Trust Nginx reverse proxy (fixes ERR_ERL_UNEXPECTED_X_FORWARDED_FOR)
+app.set('trust proxy', 1);
+
 // ─── Security Middleware (helmet, compression, cors, rate-limit) ───────────────
 applySecurityMiddleware(app);
 
@@ -20,16 +23,21 @@ applySecurityMiddleware(app);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+const SQLiteStore = require('connect-sqlite3')(session);
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'lab-erp-dev-secret-change-in-production',
+  store: new SQLiteStore({
+    db:  'sessions.db',
+    dir: './data'
+  }),
+  secret: process.env.SESSION_SECRET || 'biopap-secret-2026',
   resave: false,
   saveUninitialized: false,
   cookie: {
+    secure:   false,
     httpOnly: true,
-    secure:   process.env.NODE_ENV === 'production',
     sameSite: 'lax',
-    maxAge:   8 * 60 * 60 * 1000,   // 8 hours
-  },
+    maxAge:   8 * 60 * 60 * 1000
+  }
 }));
 
 app.use(express.static(path.join(__dirname, 'public')));
@@ -47,6 +55,7 @@ app.use('/api/billing',       require('./routes/billing'));
 app.use('/api/finance',       require('./routes/finance'));
 app.use('/api/notifications', require('./routes/notifications'));
 app.use('/report',            require('./routes/reports'));
+app.use('/api/pdf',           require('./routes/pdf'));
 
 // ─── Health check ─────────────────────────────────────────────────────────────
 app.get('/health', (req, res) => {
@@ -56,6 +65,11 @@ app.get('/health', (req, res) => {
     db:      process.env.DB_TYPE  || 'sqlite',
     uptime:  Math.round(process.uptime()),
   });
+});
+
+// ─── Generador PAP ────────────────────────────────────────────────────────────
+app.get('/pap-generator', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'pap-generator.html'));
 });
 
 // ─── SPA Fallback ──────────────────────────────────────────────────────────────
