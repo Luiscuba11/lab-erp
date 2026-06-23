@@ -58,6 +58,13 @@ const Orders = (() => {
             ${(o.completed_count > 0)
               ? `<button class="btn btn-sm btn-ghost" onclick="window.open('/report/${o.id}','_blank')">Informe</button>`
               : ''}
+            ${(o.completed_count > 0)
+              ? `<button class="btn btn-sm" onclick="Orders.enviarWhatsApp(${o.id})"
+                   title="Enviar resultados por WhatsApp"
+                   style="background:#25D366;border:none;color:white;padding:4px 10px;border-radius:6px;cursor:pointer;font-size:12px;display:inline-flex;align-items:center;gap:4px">
+                   📱 WhatsApp
+                 </button>`
+              : ''}
           </td>
         </tr>
       `;
@@ -340,10 +347,32 @@ const Orders = (() => {
     App.openModal('modal-overlay-result');
   }
 
+  async function enviarWhatsApp(orderId) {
+    try {
+      App.toast('Enviando WhatsApp...', 'info', 2000);
+
+      const response = await fetch(`/api/orders/${orderId}/whatsapp`, {
+        method: 'POST',
+        credentials: 'include'
+      });
+
+      if (!response.ok) throw new Error('Error del servidor');
+      const data = await response.json();
+
+      if (data.sinTelefono) {
+        App.toast(`⚠️ ${data.paciente} no tiene teléfono registrado`, 'warning', 4000);
+      } else {
+        App.toast(`✅ WhatsApp enviado a ${data.paciente}`, 'success', 3000);
+      }
+    } catch (err) {
+      App.toast('Error enviando WhatsApp', 'error');
+    }
+  }
+
   function esc(str) {
     if (str == null) return '';
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  return { load, openCreate, searchPatient, selectPatient, clearPatient, submit, openDetail, updateTestCount, filterTests, toggleTest, renderPriceSummary };
+  return { load, openCreate, searchPatient, selectPatient, clearPatient, submit, openDetail, updateTestCount, filterTests, toggleTest, renderPriceSummary, enviarWhatsApp };
 })();

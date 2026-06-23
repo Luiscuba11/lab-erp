@@ -199,7 +199,45 @@ router.put('/order/:orderId/validate-all', requireRole('BIOCHEMIST', 'ADMIN'), a
     await auditLog(req.session.user.id, 'VALIDATE_ALL', 'order', req.params.orderId, { count: items.length });
 
     res.json({ validated: items.length });
+
+    // Envío automático WhatsApp tras validación completa (no bloquea la respuesta)
+    enviarWhatsAppAuto(req.params.orderId).catch(console.error);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
+
+const enviarWhatsAppAuto = async (orderId) => {
+  try {
+    const res = await fetch(`http://localhost:${process.env.PORT || 3004}/report/whatsapp/${orderId}`, {
+      headers: { 'Cookie': 'internal-call=true' }
+    });
+    if (!res.ok) return;
+    const data = await res.json();
+
+    if (!data.tienetelefono) {
+      console.log(`[WhatsApp] Orden ${orderId}: paciente sin teléfono, omitiendo`);
+      return;
+    }
+
+    const phone = data.url.match(/wa\.me\/(\d+)/)?.[1];
+    if (!phone) return;
+
+    const wRes = await fetch('http://localhost:8080/message/sendText/biopap', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': 'biopap-evolution-key-2026'
+      },
+      body: JSON.stringify({
+        number: phone,
+        text: data.mensaje
+      })
+    });
+
+    const wData = await wRes.json();
+    console.log(`[WhatsApp] Orden ${orderId} → ${phone}: ${wRes.ok ? 'ENVIADO ✓' : 'ERROR'}`);
+  } catch (err) {
+    console.error(`[WhatsApp Auto] Error orden ${orderId}:`, err.message);
+  }
+};
 
 module.exports = router;

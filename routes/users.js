@@ -1,9 +1,31 @@
 'use strict';
 
 const express = require('express');
-const router = express.Router();
+const router  = express.Router();
+const path    = require('path');
+const fs      = require('fs');
+const multer  = require('multer');
 const { run, get, all, hashPassword, auditLog } = require('../db/database');
 const { requireRole } = require('../middleware/auth');
+
+const FIRMAS_DIR = path.join(__dirname, '..', 'public', 'firmas');
+if (!fs.existsSync(FIRMAS_DIR)) fs.mkdirSync(FIRMAS_DIR, { recursive: true });
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, FIRMAS_DIR),
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase() || '.png';
+    cb(null, `firma_user_${req.params.userId}${ext}`);
+  }
+});
+const upload = multer({
+  storage,
+  limits: { fileSize: 2 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    if (/^image\/(png|jpeg|gif|webp)$/.test(file.mimetype)) cb(null, true);
+    else cb(new Error('Solo se permiten imágenes PNG, JPG, GIF o WebP'));
+  }
+});
 
 // GET /api/users
 router.get('/', requireRole('ADMIN'), async (req, res) => {
@@ -90,6 +112,36 @@ router.put('/:id', requireRole('ADMIN'), async (req, res) => {
 
     const updated = await get('SELECT id, username, full_name, role, active, created_at FROM users WHERE id = ?', [req.params.id]);
     res.json(updated);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// POST /api/users/:userId/firma — upload signature image (ADMIN only)
+router.post('/:userId/firma', requireRole('ADMIN'), upload.single('firma'), async (req, res) => {
+  try {
+    const user = await get('SELECT id FROM users WHERE id = ?', [req.params.userId]);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    if (!req.file) return res.status(400).json({ error: 'No se recibió ningún archivo' });
+
+    const firmaUrl = `/firmas/${req.file.filename}`;
+    await run('UPDATE users SET firma_url = ? WHERE id = ?', [firmaUrl, req.params.userId]);
+    await auditLog(req.session.user.id, 'UPLOAD_FIRMA', 'user', req.params.userId, { firma_url: firmaUrl });
+    res.json({ ok: true, firma_url: firmaUrl });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// DELETE /api/users/:userId/firma — remove signature image (ADMIN only)
+router.delete('/:userId/firma', requireRole('ADMIN'), async (req, res) => {
+  try {
+    const user = await get('SELECT firma_url FROM users WHERE id = ?', [req.params.userId]);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    if (user.firma_url) {
+      const filePath = path.join(__dirname, '..', 'public', user.firma_url);
+      if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+      await run('UPDATE users SET firma_url = NULL WHERE id = ?', [req.params.userId]);
+      await auditLog(req.session.user.id, 'DELETE_FIRMA', 'user', req.params.userId, {});
+    }
+    res.json({ ok: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 

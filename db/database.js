@@ -588,6 +588,9 @@ async function init() {
   if (!supCols.includes('determinations_per_unit'))await run("ALTER TABLE supplies ADD COLUMN determinations_per_unit REAL DEFAULT 1");
   if (!supCols.includes('lead_time_days'))         await run("ALTER TABLE supplies ADD COLUMN lead_time_days INTEGER DEFAULT 7");
 
+  const usrCols = (await all("PRAGMA table_info(users)")).map(c => c.name);
+  if (!usrCols.includes('firma_url')) await run("ALTER TABLE users ADD COLUMN firma_url TEXT DEFAULT NULL");
+
   // Expand flag CHECK constraint to support ABNORMAL / SIGNIFICANT / NOT_SIGNIFICANT / INFORMATIVO
   const flagCheck = await get("SELECT sql FROM sqlite_master WHERE type='table' AND name='results'");
   if (flagCheck && flagCheck.sql && flagCheck.sql.includes("flag IN ('NORMAL','LOW','HIGH')")) {
@@ -974,6 +977,48 @@ async function init() {
     }
     console.log('[DB] Fixed costs seeded.');
   }
+
+  // ─── PAP Tables ────────────────────────────────────────────────────────────
+  await run(`CREATE TABLE IF NOT EXISTS pap_paquetes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nombre TEXT NOT NULL,
+    fecha_recepcion TEXT NOT NULL,
+    indicacion TEXT DEFAULT 'PARTICULAR',
+    hallazgos TEXT,
+    observaciones TEXT,
+    total_laminas INTEGER DEFAULT 0,
+    estado TEXT DEFAULT 'PENDIENTE',
+    created_by INTEGER,
+    created_at TEXT DEFAULT (datetime('now','localtime')),
+    updated_at TEXT DEFAULT (datetime('now','localtime'))
+  )`);
+
+  await run(`CREATE TABLE IF NOT EXISTS pap_resultados (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    paquete_id INTEGER REFERENCES pap_paquetes(id),
+    codigo TEXT UNIQUE NOT NULL,
+    numero_lamina INTEGER NOT NULL,
+    ipress TEXT NOT NULL,
+    paciente TEXT NOT NULL,
+    edad INTEGER,
+    fecha_recepcion TEXT,
+    fecha_resultado TEXT,
+    indicacion TEXT DEFAULT 'PARTICULAR',
+    hallazgos TEXT,
+    resultado_bethesda TEXT DEFAULT 'NILM',
+    observaciones TEXT,
+    estado TEXT DEFAULT 'PENDIENTE',
+    created_at TEXT DEFAULT (datetime('now','localtime')),
+    updated_at TEXT DEFAULT (datetime('now','localtime'))
+  )`);
+
+  await run(`CREATE TABLE IF NOT EXISTS pap_correlativo (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    anio INTEGER NOT NULL UNIQUE,
+    ultimo_numero INTEGER DEFAULT 0
+  )`);
+
+  console.log('[DB] PAP tables ready.');
 }
 
 // ─── Helper Utilities ──────────────────────────────────────────────────────────

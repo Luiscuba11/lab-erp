@@ -80,6 +80,9 @@
 ═══════════════════════════════════════════════════ -->
 <div id="app" class="app hidden">
 
+  <!-- Overlay para cerrar drawer en móvil -->
+  <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
   <!-- Barra lateral -->
   <aside class="sidebar">
     <div class="sidebar-header">
@@ -118,6 +121,9 @@
 
     <!-- Barra Superior -->
     <header class="top-bar">
+      <button id="menu-toggle" class="menu-toggle" aria-label="Abrir menú">
+        <span></span><span></span><span></span>
+      </button>
       <div class="breadcrumb" id="breadcrumb">Panel Principal</div>
       <div class="top-bar-right">
         <span id="current-datetime" style="background:var(--slate-100);padding:5px 12px;border-radius:8px;font-size:12px;font-weight:500;border:1px solid var(--border);color:var(--slate-600);"></span>
@@ -666,6 +672,54 @@
         </div>
       </section>
 
+      <!-- ── PAP Paquetes ───────────────────────────────── -->
+      <section id="section-pap-paquetes" class="section">
+        <div class="section-header">
+          <div class="section-title-block">
+            <h2>🔬 Paquetes PAP</h2>
+            <p>Registro y codificación de lotes de análisis Papanicolau</p>
+          </div>
+          <button class="btn btn-primary" onclick="PapPaquetes.openCreate()">+ Nuevo Paquete</button>
+        </div>
+        <div id="pap-paquetes-list">
+          <div class="table-empty"><span class="empty-icon">🔬</span>Cargando paquetes...</div>
+        </div>
+      </section>
+
+      <!-- ── PAP Resultados ─────────────────────────────── -->
+      <section id="section-pap-resultados" class="section">
+        <div class="section-header">
+          <div class="section-title-block">
+            <h2>📊 Banco de Resultados PAP</h2>
+            <p>Historial completo de análisis Papanicolau codificados</p>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="PapResultados.exportar()">📥 Exportar CSV</button>
+        </div>
+        <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+          <div class="search-bar" style="flex:2;min-width:200px">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="pap-search" placeholder="Buscar paciente o código PAP..." oninput="PapResultados.filtrar()">
+          </div>
+          <select id="pap-filter-bethesda" onchange="PapResultados.filtrar()" style="padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:13px;min-width:180px">
+            <option value="">Todos los resultados</option>
+            <option value="NILM">NILM</option>
+            <option value="ASCUS">ASCUS</option>
+            <option value="AGUS">AGUS</option>
+            <option value="LSIL">LSIL</option>
+            <option value="HSIL">HSIL</option>
+            <option value="CARCINOMA_ESCAMOSO">Carcinoma escamoso</option>
+            <option value="ADENOCARCINOMA">Adenocarcinoma</option>
+            <option value="INSATISFACTORIO">Insatisfactorio</option>
+          </select>
+          <input type="text" id="pap-filter-ipress" placeholder="IPRESS..." oninput="PapResultados.filtrar()" style="flex:1;min-width:140px;padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:13px">
+          <input type="date" id="pap-filter-desde" onchange="PapResultados.filtrar()" style="padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:13px">
+          <input type="date" id="pap-filter-hasta" onchange="PapResultados.filtrar()" style="padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:13px">
+        </div>
+        <div id="pap-resultados-list">
+          <div class="table-empty"><span class="empty-icon">📊</span>Cargando resultados...</div>
+        </div>
+      </section>
+
     </main>
   </div>
 </div>
@@ -704,7 +758,20 @@
         </div>
         <div class="form-group">
           <label>N° Documento *</label>
-          <input type="text" id="patient-id-number" placeholder="DNI / Cédula / Pasaporte">
+          <div style="display:flex; gap:8px; align-items:center">
+            <input type="text" id="patient-id-number"
+                   placeholder="DNI / Cédula / Pasaporte"
+                   style="flex:1"
+                   maxlength="8"
+                   oninput="if(this.value.length===8 && /^\d{8}$/.test(this.value)) Patients.buscarDNI()">
+            <button type="button" id="btn-buscar-dni"
+                    onclick="Patients.buscarDNI()"
+                    style="height:40px; padding:0 14px; background:#1d4ed8; color:white;
+                           border:none; border-radius:8px; cursor:pointer; font-size:13px;
+                           white-space:nowrap; flex-shrink:0">
+              🔍 Buscar
+            </button>
+          </div>
         </div>
       </div>
       <div class="form-group">
@@ -1161,7 +1228,7 @@
 
 <!-- Scripts -->
 <script src="/js/api.js"></script>
-<script src="/js/app.js"></script>
+<script src="/js/app.js?v=10"></script>
 <script src="/js/dashboard.js"></script>
 <script src="/js/patients.js"></script>
 <script src="/js/orders.js"></script>
@@ -1172,6 +1239,7 @@
 <script src="/js/billing.js"></script>
 <script src="/js/finance.js"></script>
 <script src="/js/notifications.js"></script>
+<script src="/js/pap.js"></script>
 
 </body>
 </html>

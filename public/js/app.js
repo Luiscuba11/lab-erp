@@ -14,28 +14,34 @@ const App = (() => {
       { id: 'billing',   label: 'Caja / Cobros',           icon: '💰' },
     ],
     TECHNICIAN: [
-      { id: 'dashboard', label: 'Panel Principal',         icon: '📊' },
-      { id: 'results',   label: 'Ingreso de Resultados',   icon: '🧪' },
-      { id: 'supplies',  label: 'Control de Insumos',      icon: '📦' },
-      { url: '/pap-generator', label: 'Generador PAP',     icon: '🦠' },
+      { id: 'dashboard',        label: 'Panel Principal',         icon: '📊' },
+      { id: 'results',          label: 'Ingreso de Resultados',   icon: '🧪' },
+      { id: 'supplies',         label: 'Control de Insumos',      icon: '📦' },
+      { url: '/pap-generator',  label: 'Generador PAP',           icon: '🦠' },
+      { id: 'pap-paquetes',     label: 'Paquetes PAP',            icon: '🔬' },
+      { id: 'pap-resultados',   label: 'Banco de Resultados PAP', icon: '📊' },
     ],
     BIOCHEMIST: [
-      { id: 'dashboard',   label: 'Panel Principal',       icon: '📊' },
-      { id: 'validation',  label: 'Validación',            icon: '✅' },
-      { url: '/pap-generator', label: 'Generador PAP',     icon: '🦠' },
+      { id: 'dashboard',        label: 'Panel Principal',         icon: '📊' },
+      { id: 'validation',       label: 'Validación',              icon: '✅' },
+      { url: '/pap-generator',  label: 'Generador PAP',           icon: '🦠' },
+      { id: 'pap-paquetes',     label: 'Paquetes PAP',            icon: '🔬' },
+      { id: 'pap-resultados',   label: 'Banco de Resultados PAP', icon: '📊' },
     ],
     ADMIN: [
-      { id: 'dashboard',   label: 'Panel Principal',       icon: '🏠' },
-      { id: 'patients',    label: 'Pacientes',             icon: '👤' },
-      { id: 'orders',      label: 'Órdenes',               icon: '📋' },
-      { id: 'results',     label: 'Ingreso de Resultados', icon: '🧪' },
-      { id: 'validation',  label: 'Validación',            icon: '✅' },
-      { id: 'catalog',     label: 'Catálogo de Pruebas',   icon: '🔬' },
-      { id: 'supplies',    label: 'Control de Insumos',    icon: '📦' },
-      { id: 'users',       label: 'Usuarios',              icon: '👥' },
-      { id: 'billing',     label: 'Caja / Cobros',         icon: '💰' },
-      { id: 'finance',     label: 'Finanzas',              icon: '📊' },
-      { url: '/pap-generator', label: 'Generador PAP',     icon: '🦠' },
+      { id: 'dashboard',        label: 'Panel Principal',         icon: '🏠' },
+      { id: 'patients',         label: 'Pacientes',               icon: '👤' },
+      { id: 'orders',           label: 'Órdenes',                 icon: '📋' },
+      { id: 'results',          label: 'Ingreso de Resultados',   icon: '🧪' },
+      { id: 'validation',       label: 'Validación',              icon: '✅' },
+      { id: 'catalog',          label: 'Catálogo de Pruebas',     icon: '🔬' },
+      { id: 'supplies',         label: 'Control de Insumos',      icon: '📦' },
+      { id: 'users',            label: 'Usuarios',                icon: '👥' },
+      { id: 'billing',          label: 'Caja / Cobros',           icon: '💰' },
+      { id: 'finance',          label: 'Finanzas',                icon: '📊' },
+      { url: '/pap-generator',  label: 'Generador PAP',           icon: '🦠' },
+      { id: 'pap-paquetes',     label: 'Paquetes PAP',            icon: '🔬' },
+      { id: 'pap-resultados',   label: 'Banco de Resultados PAP', icon: '📊' },
     ]
   };
 
@@ -49,8 +55,10 @@ const App = (() => {
     catalog:    () => typeof Catalog   !== 'undefined' && Catalog.load(),
     supplies:   () => typeof Supplies  !== 'undefined' && Supplies.load(),
     users:      () => typeof Users     !== 'undefined' && Users.load(),
-    billing:    () => typeof Billing   !== 'undefined' && Billing.load(),
-    finance:    () => typeof Finance   !== 'undefined' && Finance.load(),
+    billing:         () => typeof Billing       !== 'undefined' && Billing.load(),
+    finance:         () => typeof Finance       !== 'undefined' && Finance.load(),
+    'pap-paquetes':  () => typeof PapPaquetes   !== 'undefined' && PapPaquetes.load(),
+    'pap-resultados':() => typeof PapResultados !== 'undefined' && PapResultados.load(),
   };
 
   // ─── Init ────────────────────────────────────────────────────────────────
@@ -124,10 +132,12 @@ const App = (() => {
     const nav = document.getElementById('sidebar-nav');
     const items = NAV_CONFIG[user.role] || [];
     nav.innerHTML = items.map(item => item.url
-      ? `<a class="nav-item nav-item--link" href="${item.url}" target="_blank" rel="noopener noreferrer">
-           <span class="nav-icon">${item.icon}</span>
-           <span class="nav-label">${item.label}</span>
-         </a>`
+      ? `<a href="${item.url}" target="_blank" rel="noopener noreferrer"
+            id="nav-${item.url.replace(/\//g,'-').replace(/^-/,'')}"
+            style="display:flex;align-items:center;gap:10px;padding:10px 16px;margin:4px 8px;border-radius:8px;text-decoration:none;color:#4ade80;background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.3);font-size:13px;font-weight:600;transition:all 0.2s ease;"
+            onmouseenter="this.style.background='rgba(74,222,128,0.25)';this.style.borderColor='rgba(74,222,128,0.7)';this.style.color='#86efac';this.style.transform='translateX(3px)'"
+            onmouseleave="this.style.background='rgba(74,222,128,0.1)';this.style.borderColor='rgba(74,222,128,0.3)';this.style.color='#4ade80';this.style.transform='translateX(0)'"
+         >${item.icon} <span>${item.label}</span></a>`
       : `<div class="nav-item" id="nav-${item.id}" data-section="${item.id}">
            <span class="nav-icon">${item.icon}</span>
            <span class="nav-label">${item.label}</span>
@@ -172,7 +182,8 @@ const App = (() => {
       dashboard: 'Panel Principal', patients: 'Pacientes', orders: 'Órdenes',
       results: 'Ingreso de Resultados', validation: 'Validación de Resultados',
       catalog: 'Catálogo de Pruebas', supplies: 'Control de Insumos', users: 'Gestión de Usuarios',
-      billing: 'Caja / Cobros', finance: 'Finanzas'
+      billing: 'Caja / Cobros', finance: 'Finanzas',
+      'pap-paquetes': 'Paquetes PAP', 'pap-resultados': 'Banco de Resultados PAP'
     };
     document.getElementById('breadcrumb').textContent = labels[id] || id;
 
@@ -182,6 +193,7 @@ const App = (() => {
     if (SECTION_LOADERS[id]) {
       SECTION_LOADERS[id]();
     }
+    document.dispatchEvent(new CustomEvent('sectionChange', { detail: id }));
   }
 
   // ─── Modals ──────────────────────────────────────────────────────────────

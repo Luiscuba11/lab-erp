@@ -8,6 +8,53 @@ const { requireAuth, requireRole } = require('../middleware/auth');
 const CAN_ACCESS = ['RECEPTIONIST', 'ADMIN', 'BIOCHEMIST', 'TECHNICIAN'];
 const CAN_WRITE  = ['RECEPTIONIST', 'ADMIN'];
 
+// GET /api/patients/dni/:numero — Consulta RENIEC via VerificaPE
+router.get('/dni/:numero', async (req, res) => {
+  const { numero } = req.params;
+  if (!/^\d{8}$/.test(numero)) {
+    return res.status(400).json({ error: 'DNI debe tener 8 dígitos' });
+  }
+  try {
+    const response = await fetch(
+      `https://api.verificape.com/v2/dni/${numero}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${process.env.VERIFICAPE_API_KEY}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    if (!response.ok) throw new Error('No encontrado');
+    const json = await response.json();
+    const data = json.data || json;
+
+    let fechaNacimiento = '';
+    if (data.birthDate) {
+      const partes = data.birthDate.split('/');
+      if (partes.length === 3) {
+        fechaNacimiento = `${partes[2]}-${partes[1].padStart(2,'0')}-${partes[0].padStart(2,'0')}`;
+      }
+    }
+
+    let sexo = '';
+    if (data.gender) {
+      const g = data.gender.toUpperCase();
+      sexo = g.includes('FEM') || g === 'F' ? 'F' : 'M';
+    }
+
+    res.json({
+      nombres: data.names,
+      apellidoPaterno: data.paternalSurname,
+      apellidoMaterno: data.maternalSurname,
+      nombreCompleto: data.fullName || `${data.names} ${data.paternalSurname} ${data.maternalSurname}`.trim(),
+      fechaNacimiento,
+      sexo
+    });
+  } catch (err) {
+    res.status(404).json({ error: 'DNI no encontrado en RENIEC' });
+  }
+});
+
 // GET /api/patients?search=
 router.get('/', requireRole(...CAN_ACCESS), async (req, res) => {
   try {

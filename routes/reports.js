@@ -42,13 +42,10 @@ function docHead(title, extraStyle = '') {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>${title}</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+      font-family: 'Segoe UI', Arial, sans-serif;
       font-size: 12.5px;
       color: #0f172a;
       background: #fff;
@@ -296,13 +293,111 @@ function docHead(title, extraStyle = '') {
     }
 
     @media print {
-      body { padding: 0; background: #fff; }
-      .page { padding: 12px; max-width: 100%; }
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+      body { margin: 0; padding: 0; font-size: 10px; line-height: 1.3; }
+
       .no-print { display: none !important; }
-      @page { margin: 1cm; size: A4; }
-      .letterhead { box-shadow: none; }
-      .section-title { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      table.results-table thead th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+      @page { margin: 0.8cm; size: A4; }
+
+      .page {
+        padding: 8px !important;
+        max-width: 100% !important;
+        box-shadow: none !important;
+        margin: 0 !important;
+      }
+
+      /* ── Letterhead compacto ── */
+      .letterhead {
+        padding: 8px 12px !important;
+        margin-bottom: 6px !important;
+      }
+      .lab-logo-svg { width: 36px !important; height: 36px !important; }
+      .lab-name { font-size: 18px !important; }
+      .lab-tagline { font-size: 8px !important; }
+      .lab-meta { font-size: 8px !important; line-height: 1.4 !important; }
+      .doc-number { font-size: 16px !important; }
+      .doc-date, .doc-status { font-size: 8px !important; }
+
+      /* ── Secciones compactas ── */
+      .section-block {
+        margin-bottom: 5px !important;
+        page-break-inside: avoid;
+      }
+      .section-title {
+        padding: 3px 10px !important;
+        font-size: 8px !important;
+        letter-spacing: 0.5px !important;
+      }
+      .section-body {
+        padding: 6px 10px !important;
+      }
+      .info-grid {
+        gap: 4px !important;
+      }
+      .info-label {
+        font-size: 7.5px !important;
+        margin-bottom: 1px !important;
+      }
+      .info-value {
+        font-size: 9px !important;
+      }
+      .patient-name {
+        font-size: 13px !important;
+      }
+
+      /* ── Tabla de resultados compacta ── */
+      .results-table {
+        margin-bottom: 4px !important;
+      }
+      .results-table th {
+        padding: 4px 6px !important;
+        font-size: 7.5px !important;
+      }
+      .results-table td {
+        padding: 3px 6px !important;
+        font-size: 9px !important;
+        line-height: 1.2 !important;
+      }
+      .results-table tr {
+        height: auto !important;
+      }
+
+      /* ── Badges/flags compactos ── */
+      .flag-chip, .badge {
+        padding: 1px 4px !important;
+        font-size: 7.5px !important;
+      }
+
+      /* ── Leyenda compacta ── */
+      .ref-legend {
+        padding: 3px 6px !important;
+        font-size: 7.5px !important;
+        margin-bottom: 4px !important;
+      }
+
+      /* ── Firma compacta ── */
+      .signature-section {
+        margin-top: 8px !important;
+        padding: 6px 10px !important;
+      }
+      .sig-line {
+        margin: 20px auto 3px !important;
+        width: 160px !important;
+      }
+      .sig-label { font-size: 8px !important; }
+      .sig-sublabel { font-size: 7px !important; }
+
+      /* ── Footer compacto ── */
+      .page-footer {
+        padding: 4px 10px !important;
+        font-size: 7.5px !important;
+        margin-top: 4px !important;
+      }
+
+      /* Evitar cortes en filas de tabla */
+      .results-table tbody tr { page-break-inside: avoid; }
     }
     ${extraStyle}
   </style>
@@ -383,7 +478,7 @@ router.get('/receipt/:orderId([0-9]+)', async (req, res) => {
     const payStatus = order.payment_status || 'PENDIENTE';
     const payMethod = order.payment_method || '—';
     const cashier   = order.cashier_name || order.created_by_name || '—';
-    const now       = new Date().toLocaleString('es-ES');
+    const now       = new Date().toLocaleString('es-ES', { timeZone: 'America/Lima' });
 
     const statusConfig = {
       PAGADO:    { label: '✓ PAGADO',     bg: '#dcfce7', color: '#166534' },
@@ -435,7 +530,7 @@ router.get('/receipt/:orderId([0-9]+)', async (req, res) => {
     <div class="info-row"><span class="label">Paciente</span><span class="value">${order.patient_name}</span></div>
     <div class="info-row"><span class="label">Documento</span><span class="value">${order.id_number || '—'}</span></div>
     <div class="info-row"><span class="label">Atendido por</span><span class="value">${cashier}</span></div>
-    ${order.paid_at ? `<div class="info-row"><span class="label">Fecha de pago</span><span class="value">${new Date(order.paid_at).toLocaleString('es-ES')}</span></div>` : ''}
+    ${order.paid_at ? `<div class="info-row"><span class="label">Fecha de pago</span><span class="value">${new Date(order.paid_at).toLocaleString('es-ES', { timeZone: 'America/Lima' })}</span></div>` : ''}
     <div class="info-row"><span class="label">Método de pago</span><span class="value">${payMethod}</span></div>
 
     <hr class="divider">
@@ -525,9 +620,11 @@ router.get('/:orderId([0-9]+)', async (req, res) => {
       if (rt === 'TEXT')  return `<span class="flag-chip flag-INFO">INFORMATIVO</span>`;
       if (!flag || flag === 'NORMAL') return `<span class="flag-chip flag-NORMAL">Normal</span>`;
       if (critical)       return `<span class="flag-chip flag-CRITICAL">⚠ CRÍTICO ${flag === 'HIGH' ? '▲' : '▼'}</span>`;
-      if (flag === 'HIGH' || flag === 'SIGNIFICANT') return `<span class="flag-chip flag-HIGH">▲ ALTO</span>`;
+      if (flag === 'HIGH') return `<span class="flag-chip flag-HIGH">▲ ALTO</span>`;
       if (flag === 'LOW') return `<span class="flag-chip flag-LOW">▼ BAJO</span>`;
       if (flag === 'ABNORMAL') return `<span class="flag-chip flag-ABNORMAL">ANORMAL</span>`;
+      if (flag === 'SIGNIFICANT') return `<span class="flag-chip flag-HIGH">SIGNIFICATIVO</span>`;
+      if (flag === 'NOT_SIGNIFICANT') return `<span class="flag-chip flag-NORMAL">NO SIGNIFICATIVO</span>`;
       return `<span class="flag-chip flag-INFO">${flag}</span>`;
     }
 
@@ -616,8 +713,9 @@ router.get('/:orderId([0-9]+)', async (req, res) => {
       return rows;
     }
 
-    const validator   = items.find(i => i.validated_by_name)?.validated_by_name || '—';
-    const reportDate  = new Date().toLocaleString('es-ES', { day:'2-digit', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit' });
+    const validatorItem = items.find(i => i.validated_by_name);
+    const validator     = validatorItem?.validated_by_name || '—';
+    const reportDate  = new Date().toLocaleString('es-ES', { timeZone: 'America/Lima', day:'2-digit', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit' });
     const orderStatus = { PENDING: 'PENDIENTE', IN_PROCESS: 'EN PROCESO', COMPLETED: 'COMPLETADO', DELIVERED: 'ENTREGADO' }[order.status] || order.status;
     const ageLabel    = { child: 'Niño / Niña', adult: 'Adulto', elder: 'Adulto Mayor' }[ageGroup] || ageGroup;
 
@@ -680,7 +778,7 @@ router.get('/:orderId([0-9]+)', async (req, res) => {
     <div class="section-body">
       <div class="info-grid">
         <div class="info-item"><label>N° de Orden</label><span style="font-family:'Courier New',monospace;color:#1d4ed8">${order.order_number}</span></div>
-        <div class="info-item"><label>Fecha de Registro</label><span>${new Date(order.created_at).toLocaleString('es-ES')}</span></div>
+        <div class="info-item"><label>Fecha de Registro</label><span>${new Date(order.created_at).toLocaleString('es-ES', { timeZone: 'America/Lima' })}</span></div>
         <div class="info-item"><label>Registrado por</label><span>${order.created_by_name || '—'}</span></div>
         ${order.notes ? `<div class="info-item" style="grid-column:1/-1"><label>Observaciones</label><span style="font-weight:400">${order.notes}</span></div>` : ''}
       </div>
@@ -718,16 +816,33 @@ router.get('/:orderId([0-9]+)', async (req, res) => {
 
   <!-- Firma -->
   <div class="signature-section">
-    <div class="sig-block">
-      <div class="sig-line"></div>
-      <div class="sig-name">${validator}</div>
-      <div class="sig-title">Bióloga — Citotecnóloga</div>
-      <div class="sig-reg">CBP 4602 &nbsp;·&nbsp; SLC 2206</div>
-    </div>
-    <div style="text-align:right;font-size:10.5px;color:#94a3b8;max-width:280px;line-height:1.8;">
-      Este informe ha sido generado electrónicamente.<br>
-      Los valores de referencia pueden variar según el equipo y método utilizado.<br>
-      Para consultas comuníquese con el laboratorio.
+    <div style="display:flex; justify-content:flex-end; margin-top:10px">
+      <div style="text-align:center; min-width:220px">
+        <div style="
+          border:1px solid #e2e8f0;
+          border-radius:8px;
+          padding:10px 16px;
+          background:#f8fafc;
+          font-size:11px;
+          color:#374151;
+          margin-bottom:6px;
+          text-align:left;
+        ">
+          <div style="display:flex; align-items:center; gap:6px; margin-bottom:4px">
+            <span style="color:#1d4ed8; font-size:14px">✦</span>
+            <span style="font-weight:700; color:#1d4ed8; font-size:10px; letter-spacing:0.5px">FIRMADO DIGITALMENTE</span>
+          </div>
+          <div style="font-size:9px; color:#64748b; line-height:1.6">
+            <div><b>Por:</b> ${validator !== '—' ? validator : 'Bioquímico Responsable'}</div>
+            <div><b>Fecha:</b> ${new Date().toLocaleString('es-ES', { timeZone: 'America/Lima', day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' })}</div>
+            <div><b>Motivo:</b> Validación de resultados clínicos</div>
+            <div><b>Sistema:</b> BIO PAP LabERP v1.0</div>
+          </div>
+        </div>
+        <div class="sig-line" style="border-top:1.5px solid #1d4ed8; width:200px; margin:0 auto 4px"></div>
+        <div class="sig-label" style="font-size:10px; font-weight:600; color:#0f172a">${validator !== '—' ? validator : 'Bioquímico Responsable'}</div>
+        <div class="sig-sublabel" style="font-size:8px; color:#64748b">Q.F. - Colegiado CBP</div>
+      </div>
     </div>
   </div>
 
@@ -763,7 +878,7 @@ router.get('/purchase-order/:id([0-9]+)', async (req, res) => {
 
     const stLabels = { DRAFT:'Borrador', CONFIRMED:'Confirmada', RECEIVED:'Recibida', CANCELLED:'Cancelada' };
     const stColors = { DRAFT:'#f1f5f9;color:#475569', CONFIRMED:'#dbeafe;color:#1e40af', RECEIVED:'#dcfce7;color:#166534', CANCELLED:'#fee2e2;color:#991b1b' };
-    const now  = new Date().toLocaleString('es-ES', { day:'2-digit', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit' });
+    const now  = new Date().toLocaleString('es-ES', { timeZone: 'America/Lima', day:'2-digit', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit' });
     const total = items.reduce((s, i) => s + (i.quantity_ordered * (i.unit_price || 0)), 0);
 
     const rowsHtml = items.map(i => `
@@ -791,7 +906,7 @@ router.get('/purchase-order/:id([0-9]+)', async (req, res) => {
       <div class="info-grid-2">
         <div class="info-item"><label>Proveedor</label><span style="font-size:15px">${po.supplier}</span></div>
         <div class="info-item"><label>Creada por</label><span>${po.created_by_name || '—'}</span></div>
-        <div class="info-item"><label>Fecha</label><span>${new Date(po.created_at).toLocaleDateString('es-ES')}</span></div>
+        <div class="info-item"><label>Fecha</label><span>${new Date(po.created_at).toLocaleDateString('es-ES', { timeZone: 'America/Lima' })}</span></div>
         <div class="info-item"><label>Estado</label><span>${stLabels[po.status] || po.status}</span></div>
         ${po.notes ? `<div class="info-item" style="grid-column:1/-1"><label>Notas</label><span style="font-weight:400">${po.notes}</span></div>` : ''}
       </div>
@@ -854,7 +969,7 @@ router.get('/supplies/replenish', async (req, res) => {
     }
 
     const now = new Date().toLocaleString('es-ES', {
-      weekday:'long', day:'numeric', month:'long', year:'numeric',
+      timeZone: 'America/Lima', weekday:'long', day:'numeric', month:'long', year:'numeric',
       hour:'2-digit', minute:'2-digit',
     });
 
@@ -879,7 +994,7 @@ router.get('/supplies/replenish', async (req, res) => {
     }).join('');
 
     const html = docHead('Orden de Reposición de Insumos') +
-    letterhead('Reposición de Insumos', new Date().toLocaleDateString('es-ES'), `
+    letterhead('Reposición de Insumos', new Date().toLocaleDateString('es-ES', { timeZone: 'America/Lima' }), `
       <div class="lh-doc-date">${now}</div>
       <div style="margin-top:4px;font-size:11px;color:#64748b">Generado por: ${req.session.user.full_name}</div>
     `) + `
@@ -934,6 +1049,106 @@ router.get('/supplies/replenish', async (req, res) => {
 
     res.send(html);
   } catch (err) { res.status(500).send(`<h1>Error</h1><pre>${err.message}</pre>`); }
+});
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   WHATSAPP  GET /report/whatsapp/:orderId
+   ═══════════════════════════════════════════════════════════════════════════ */
+router.get('/whatsapp/:orderId([0-9]+)', async (req, res) => {
+  if (!req.session || !req.session.user) return res.status(401).json({ error: 'No autorizado' });
+
+  const { orderId } = req.params;
+  try {
+    const order = await get(`
+      SELECT o.*, p.name AS patient_name, p.contact AS phone, p.id_number
+      FROM orders o
+      JOIN patients p ON o.patient_id = p.id
+      WHERE o.id = ?
+    `, [orderId]);
+
+    if (!order) return res.status(404).json({ error: 'Orden no encontrada' });
+
+    const items = await all(`
+      SELECT r.value, r.value_text, r.flag, r.is_critical,
+             t.name AS test_name, t.unit, t.result_type
+      FROM results r
+      JOIN order_items oi ON r.order_item_id = oi.id
+      JOIN test_catalog t ON t.id = oi.test_id
+      WHERE oi.order_id = ? AND r.is_locked = 1
+      ORDER BY t.name
+    `, [orderId]);
+
+    if (!items.length) {
+      return res.status(400).json({ error: 'No hay resultados validados' });
+    }
+
+    const fecha = new Date(order.created_at).toLocaleDateString('es-ES', {
+      timeZone: 'America/Lima',
+      day: '2-digit', month: '2-digit', year: 'numeric'
+    });
+
+    const lineasResultados = items.map(r => {
+      let emoji = '✅', flagTexto = ' - NORMAL';
+      if (r.is_critical)          { emoji = '🚨'; flagTexto = ` - CRÍTICO ${r.flag === 'HIGH' ? 'ALTO' : 'BAJO'}`; }
+      else if (r.flag === 'HIGH') { emoji = '⬆️'; flagTexto = ' - ALTO'; }
+      else if (r.flag === 'LOW')  { emoji = '⬇️'; flagTexto = ' - BAJO'; }
+      else if (r.flag === 'ABNORMAL') { emoji = '⚠️'; flagTexto = ' - ANORMAL'; }
+      else if (!r.flag || r.flag === 'NORMAL') { flagTexto = ''; }
+
+      const valor = r.result_type === 'NUMERIC'
+        ? `${r.value}${r.unit ? ' ' + r.unit : ''}`.trim()
+        : (r.value_text || r.value || '—');
+
+      return `${emoji} ${r.test_name}: ${valor}${flagTexto}`;
+    }).join('\n');
+
+    const urlInforme = `${process.env.BASE_URL || 'http://163.176.246.123'}/report/${orderId}`;
+    let urlFinal = urlInforme;
+    try {
+      const tinyRes = await fetch(
+        `https://tinyurl.com/api-create.php?url=${encodeURIComponent(urlInforme)}`,
+        { signal: AbortSignal.timeout(3000) }
+      );
+      if (tinyRes.ok) {
+        const tinyUrl = await tinyRes.text();
+        if (tinyUrl.startsWith('https://tinyurl.com')) urlFinal = tinyUrl.trim();
+      }
+    } catch (e) {
+      urlFinal = urlInforme;
+    }
+
+    const mensaje =
+`🔬 *BIO PAP - Laboratorio de Análisis Clínico*
+Huanta, Ayacucho
+
+Estimado/a *${order.patient_name}*, sus resultados del *${fecha}* están listos:
+
+${lineasResultados}
+
+📄 Ver informe completo:
+${urlFinal}
+
+📍 Av. Mariscal Castilla N° 713, Huanta
+📞 990 424 393 | biopap.huanta@gmail.com
+_BIO PAP - Prevenir es la Clave_ 🔬`;
+
+    const phone = order.phone ? order.phone.replace(/\D/g, '') : '';
+    const mensajeCodificado = encodeURIComponent(mensaje);
+    const whatsappUrl = phone
+      ? `https://wa.me/51${phone}?text=${mensajeCodificado}`
+      : `https://wa.me/?text=${mensajeCodificado}`;
+
+    res.json({
+      url: whatsappUrl,
+      mensaje,
+      tienetelefono: !!phone,
+      paciente: order.patient_name
+    });
+
+  } catch (err) {
+    console.error('WhatsApp error:', err);
+    res.status(500).json({ error: 'Error generando mensaje' });
+  }
 });
 
 module.exports = router;

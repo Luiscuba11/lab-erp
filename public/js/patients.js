@@ -51,6 +51,31 @@ const Patients = (() => {
     document.getElementById('patient-modal-title').textContent = 'Registrar Paciente';
     document.getElementById('patient-edit-id').value = '';
     App.openModal('modal-overlay-patient');
+
+    function attachDNIListeners() {
+      const btnBuscar = document.getElementById('btn-buscar-dni');
+      const dniInput  = document.getElementById('patient-id-number');
+      if (btnBuscar && dniInput) {
+        btnBuscar.removeAttribute('onclick');
+        btnBuscar.addEventListener('click', function() { Patients.buscarDNI(); });
+        dniInput.removeAttribute('oninput');
+        dniInput.addEventListener('input', function() {
+          if (this.value.length === 8 && /^\d{8}$/.test(this.value)) Patients.buscarDNI();
+        });
+        return true;
+      }
+      return false;
+    }
+
+    if (!attachDNIListeners()) {
+      const observer = new MutationObserver(function(mutations, obs) {
+        if (attachDNIListeners()) obs.disconnect();
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
+      setTimeout(attachDNIListeners, 200);
+      setTimeout(attachDNIListeners, 500);
+      setTimeout(attachDNIListeners, 1000);
+    }
   }
 
   async function openEdit(id) {
@@ -148,6 +173,60 @@ const Patients = (() => {
     }
   }
 
+  async function buscarDNI() {
+    const dniInput = document.getElementById('patient-id-number');
+    const nombreInput = document.getElementById('patient-name');
+    const dni = dniInput?.value?.trim();
+
+    if (!dni || dni.length !== 8 || !/^\d{8}$/.test(dni)) {
+      App.toast('Ingresa un DNI válido de 8 dígitos', 'warning');
+      return;
+    }
+
+    const btn = document.getElementById('btn-buscar-dni');
+    if (btn) { btn.disabled = true; btn.textContent = '⏳'; }
+
+    try {
+      const res = await fetch(`/api/patients/dni/${dni}`, {
+        credentials: 'include'
+      });
+      if (!res.ok) throw new Error('No encontrado');
+      const data = await res.json();
+      requestAnimationFrame(() => {
+        if (data.nombreCompleto && nombreInput) {
+          nombreInput.value = data.nombreCompleto;
+          nombreInput.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+        const setFecha = () => {
+          const dobInput = document.getElementById('patient-dob');
+          if (dobInput && data.fechaNacimiento) {
+            const nativeSetter = Object.getOwnPropertyDescriptor(
+              window.HTMLInputElement.prototype, 'value'
+            ).set;
+            nativeSetter.call(dobInput, data.fechaNacimiento);
+            dobInput.dispatchEvent(new Event('input', { bubbles: true }));
+            dobInput.dispatchEvent(new Event('change', { bubbles: true }));
+          }
+        };
+        setFecha();
+        setTimeout(setFecha, 150);
+        setTimeout(setFecha, 400);
+        if (data.sexo) {
+          const sexoSelect = document.getElementById('patient-gender');
+          if (sexoSelect) {
+            sexoSelect.value = data.sexo;
+            sexoSelect.dispatchEvent(new Event('change', { bubbles: true }));
+          }
+        }
+        App.toast('✓ Datos encontrados en RENIEC', 'success');
+      });
+    } catch (err) {
+      App.toast('DNI no encontrado en RENIEC', 'error');
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = '🔍 Buscar'; }
+    }
+  }
+
   function clearForm() {
     ['patient-name','patient-dob','patient-gender','patient-id-number','patient-contact']
       .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
@@ -158,5 +237,5 @@ const Patients = (() => {
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  return { load, search, openCreate, openEdit, submit, viewHistory };
+  return { load, search, openCreate, openEdit, submit, viewHistory, buscarDNI };
 })();

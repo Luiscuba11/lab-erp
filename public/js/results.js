@@ -302,7 +302,8 @@ const Results = (() => {
     }
 
     flagEl.className = `result-flag-preview badge badge-${isCritical ? 'CRITICAL' : flag}`;
-    flagEl.textContent = isCritical ? `${flag} !!!` : flag;
+    const spanishFlag = flag === 'HIGH' ? 'ALTO' : flag === 'LOW' ? 'BAJO' : 'NORMAL';
+    flagEl.textContent = isCritical ? `CRÍTICO ${spanishFlag} !!!` : spanishFlag;
   }
 
   async function saveEntries() {

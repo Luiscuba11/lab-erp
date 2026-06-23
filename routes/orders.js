@@ -131,4 +131,81 @@ router.put('/:id/status', requireRole('ADMIN', 'RECEPTIONIST'), async (req, res)
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// POST /api/orders/:orderId/whatsapp — Enviar resultados por Evolution API
+router.post('/:orderId/whatsapp', requireAuth, async (req, res) => {
+  const { orderId } = req.params;
+  try {
+    const order = await get(`
+      SELECT o.*, p.name, p.contact
+      FROM orders o
+      JOIN patients p ON o.patient_id = p.id
+      WHERE o.id = ?
+    `, [orderId]);
+
+    if (!order) return res.status(404).json({ error: 'Orden no encontrada' });
+
+    if (!order.contact) {
+      return res.json({ sinTelefono: true, paciente: order.name });
+    }
+
+    const phone = order.contact.replace(/\D/g, '');
+    const fullPhone = phone.startsWith('51') ? phone : `51${phone}`;
+    const port = process.env.PORT || 3004;
+    const EVOLUTION_URL = 'http://localhost:8080';
+    const EVOLUTION_KEY = 'biopap-evolution-key-2026';
+    const INSTANCE = 'biopap';
+
+    // 1. Obtener mensaje formateado
+    const msgRes = await fetch(
+      `http://localhost:${port}/report/whatsapp/${orderId}`,
+      { headers: { 'Cookie': req.headers.cookie || '' } }
+    );
+    if (!msgRes.ok) throw new Error('Error generando mensaje');
+    const msgData = await msgRes.json();
+
+    // 2. Enviar mensaje de texto
+    await fetch(`${EVOLUTION_URL}/message/sendText/${INSTANCE}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': EVOLUTION_KEY },
+      body: JSON.stringify({ number: fullPhone, text: msgData.mensaje })
+    });
+
+    // 3. Generar y enviar PDF adjunto
+    try {
+      const pdfRes = await fetch(
+        `http://localhost:${port}/api/pdf/${orderId}`,
+        { headers: { 'Cookie': req.headers.cookie || '' } }
+      );
+      if (pdfRes.ok) {
+        const pdfBuffer = await pdfRes.arrayBuffer();
+        const pdfBase64 = Buffer.from(pdfBuffer).toString('base64');
+        const base64Puro = pdfBase64.includes(',') ? pdfBase64.split(',')[1] : pdfBase64;
+
+        await fetch(`${EVOLUTION_URL}/message/sendMedia/${INSTANCE}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'apikey': EVOLUTION_KEY },
+          body: JSON.stringify({
+            number:    fullPhone,
+            mediatype: 'document',
+            mimetype:  'application/pdf',
+            media:     base64Puro,
+            fileName:  `Resultados-BIO-PAP-${orderId}.pdf`,
+            caption:   '📄 Informe de resultados adjunto'
+          })
+        });
+        console.log(`[WhatsApp] PDF enviado a ${fullPhone} orden ${orderId}`);
+      }
+    } catch (pdfErr) {
+      console.error('[WhatsApp PDF]', pdfErr.message);
+      // No fallar si el PDF falla — el texto ya se envió
+    }
+
+    res.json({ success: true, paciente: order.name, phone: fullPhone });
+
+  } catch (err) {
+    console.error('[WhatsApp Manual]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = router;
