@@ -139,14 +139,30 @@ const App = (() => {
             onmouseenter="this.style.background='rgba(74,222,128,0.25)';this.style.borderColor='rgba(74,222,128,0.7)';this.style.color='#86efac';this.style.transform='translateX(3px)'"
             onmouseleave="this.style.background='rgba(74,222,128,0.1)';this.style.borderColor='rgba(74,222,128,0.3)';this.style.color='#4ade80';this.style.transform='translateX(0)'"
          >${item.icon} <span>${item.label}</span></a>`
-      : `<div class="nav-item" id="nav-${item.id}" data-section="${item.id}">
+      : `<div class="nav-item" id="nav-${item.id}" data-section="${item.id}" tabindex="0" role="button">
            <span class="nav-icon">${item.icon}</span>
            <span class="nav-label">${item.label}</span>
          </div>`
     ).join('');
     nav.querySelectorAll('.nav-item[data-section]').forEach(function(el) {
       el.addEventListener('click', function() { App.showSection(el.getAttribute('data-section')); });
+      el.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); App.showSection(el.getAttribute('data-section')); }
+      });
     });
+    updateNavScrollHint(nav);
+  }
+
+  // ─── Indicador de overflow (hay más opciones fuera de vista) ──────────
+  function updateNavScrollHint(nav) {
+    function refresh() {
+      const hasOverflow = nav.scrollWidth > nav.clientWidth + 2;
+      nav.classList.toggle('has-overflow-right', hasOverflow && nav.scrollLeft < nav.scrollWidth - nav.clientWidth - 2);
+      nav.classList.toggle('has-overflow-left', nav.scrollLeft > 2);
+    }
+    nav.addEventListener('scroll', refresh);
+    window.addEventListener('resize', refresh);
+    setTimeout(refresh, 50);
   }
 
   // ─── Apps grid (Panel Principal estilo Odoo) ───────────────────────────
@@ -159,13 +175,16 @@ const App = (() => {
            <span class="app-tile-icon">${item.icon}</span>
            <span class="app-tile-label">${item.label}</span>
          </a>`
-      : `<div class="app-tile" data-section="${item.id}">
+      : `<div class="app-tile" data-section="${item.id}" tabindex="0" role="button">
            <span class="app-tile-icon">${item.icon}</span>
            <span class="app-tile-label">${item.label}</span>
          </div>`
     ).join('');
     grid.querySelectorAll('.app-tile[data-section]').forEach(function(el) {
       el.addEventListener('click', function() { App.showSection(el.getAttribute('data-section')); });
+      el.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); App.showSection(el.getAttribute('data-section')); }
+      });
     });
   }
 
@@ -215,7 +234,7 @@ const App = (() => {
     if (section) section.classList.add('active');
     if (navItem) navItem.classList.add('active');
 
-    // Update breadcrumb
+    // Update breadcrumb (clickeable al Panel Principal salvo que ya estemos ahí)
     const labels = {
       dashboard: 'Panel Principal', patients: 'Pacientes', orders: 'Órdenes',
       results: 'Ingreso de Resultados', validation: 'Validación de Resultados',
@@ -223,7 +242,19 @@ const App = (() => {
       billing: 'Caja / Cobros', finance: 'Finanzas',
       'pap-paquetes': 'Paquetes PAP', 'pap-resultados': 'Banco de Resultados PAP'
     };
-    document.getElementById('breadcrumb').textContent = labels[id] || id;
+    const label = labels[id] || id;
+    const crumb = document.getElementById('breadcrumb');
+    crumb.innerHTML = id === 'dashboard'
+      ? label
+      : `<a href="#" onclick="App.showSection('dashboard');return false;" style="color:inherit;text-decoration:none;opacity:.55">Panel Principal</a>
+         <span style="opacity:.35;margin:0 6px">/</span>${label}`;
+
+    // Título de pestaña por sección
+    document.title = id === 'dashboard' ? 'BIO PAP — Sistema de Laboratorio' : `${label} · BIO PAP`;
+
+    // Volver al inicio del contenido al cambiar de sección
+    const mainContent = document.querySelector('.main-content');
+    if (mainContent) mainContent.scrollTop = 0;
 
     currentSection = id;
 

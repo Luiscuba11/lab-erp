@@ -354,6 +354,13 @@ html, body {
   overflow-y: hidden;
   padding: 0 8px;
   height: 100%;
+  position: relative;
+}
+.sidebar-nav.has-overflow-left  { mask-image: linear-gradient(to right, transparent, black 24px); -webkit-mask-image: linear-gradient(to right, transparent, black 24px); }
+.sidebar-nav.has-overflow-right { mask-image: linear-gradient(to left, transparent, black 24px); -webkit-mask-image: linear-gradient(to left, transparent, black 24px); }
+.sidebar-nav.has-overflow-left.has-overflow-right {
+  mask-image: linear-gradient(to right, transparent, black 24px, black calc(100% - 24px), transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 24px, black calc(100% - 24px), transparent);
 }
 
 .sidebar-nav::-webkit-scrollbar { height: 3px; }
@@ -392,6 +399,11 @@ a.nav-item {
 .nav-item:hover {
   background: var(--sidebar-hover);
   color: #cbd5e1;
+}
+
+.nav-item:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
 }
 
 .nav-item.active {
@@ -561,6 +573,11 @@ a.nav-item {
   transform: translateY(-3px);
   box-shadow: 0 8px 20px rgba(29,78,216,.12);
   border-color: var(--primary);
+}
+
+.app-tile:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
 
 .app-tile .app-tile-icon {
