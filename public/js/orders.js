@@ -5,13 +5,17 @@ const Orders = (() => {
   let allTests = [];
   let patientSearchTimer = null;
   let lastOrders = [];
+  let lastFiltered = [];
+  let currentPage = 1;
+  const PAGE_SIZE = 15;
 
   async function load() {
     const status = document.getElementById('order-status-filter')?.value || '';
     try {
       const orders = await API.getOrders({ status });
       lastOrders = orders;
-      render(filterBySearch(orders, document.getElementById('orders-search')?.value || ''));
+      currentPage = 1;
+      renderPage(filterBySearch(orders, document.getElementById('orders-search')?.value || ''));
     } catch (err) {
       App.toast('Error al cargar órdenes: ' + err.message, 'error');
     }
@@ -26,8 +30,19 @@ const Orders = (() => {
     );
   }
 
+  function renderPage(filtered) {
+    lastFiltered = filtered;
+    const { pageItems, totalPages, page } = App.paginate(filtered, currentPage, PAGE_SIZE);
+    render(pageItems);
+    App.renderPager('orders-pager', page, totalPages, 'Orders.prevPage()', 'Orders.nextPage()');
+  }
+
+  function prevPage() { currentPage--; renderPage(lastFiltered); }
+  function nextPage() { currentPage++; renderPage(lastFiltered); }
+
   function search(query) {
-    render(filterBySearch(lastOrders, query));
+    currentPage = 1;
+    renderPage(filterBySearch(lastOrders, query));
   }
 
   function payLabel(status) {
@@ -390,5 +405,5 @@ const Orders = (() => {
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  return { load, search, openCreate, searchPatient, selectPatient, clearPatient, submit, openDetail, updateTestCount, filterTests, toggleTest, renderPriceSummary, enviarWhatsApp };
+  return { load, search, prevPage, nextPage, openCreate, searchPatient, selectPatient, clearPatient, submit, openDetail, updateTestCount, filterTests, toggleTest, renderPriceSummary, enviarWhatsApp };
 })();

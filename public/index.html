@@ -273,6 +273,7 @@
               </tbody>
             </table>
           </div>
+          <div class="pager" id="patients-pager"></div>
         </div>
       </section>
 
@@ -288,7 +289,7 @@
               <span class="search-icon">🔍</span>
               <input type="text" id="orders-search" placeholder="Buscar por N° orden o paciente..." oninput="Orders.search(this.value)">
             </div>
-            <select id="order-status-filter" onchange="Orders.load()" style="padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:13px;">
+            <select id="order-status-filter" onchange="Orders.load()" class="filter-input">
               <option value="">Todos los Estados</option>
               <option value="PENDING">Pendiente</option>
               <option value="IN_PROCESS">En Proceso</option>
@@ -309,6 +310,7 @@
               </tbody>
             </table>
           </div>
+          <div class="pager" id="orders-pager"></div>
         </div>
       </section>
 
@@ -622,23 +624,23 @@
         </div>
 
         <!-- Summary cards -->
-        <div id="finance-summary" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:24px;"></div>
+        <div id="finance-summary" class="grid-auto-180"></div>
 
         <!-- Charts row -->
         <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:24px;">
           <div class="card">
-            <h3 style="margin-bottom:12px;font-size:14px;color:var(--text-muted);font-weight:600;">INGRESOS ÚLTIMOS 30 DÍAS</h3>
+            <h3 class="subsection-title">INGRESOS ÚLTIMOS 30 DÍAS</h3>
             <div id="finance-bar-chart" style="height:200px;display:flex;align-items:flex-end;gap:3px;overflow-x:auto;"></div>
           </div>
           <div class="card">
-            <h3 style="margin-bottom:12px;font-size:14px;color:var(--text-muted);font-weight:600;">MÉTODOS DE PAGO</h3>
+            <h3 class="subsection-title">MÉTODOS DE PAGO</h3>
             <div id="finance-payment-methods"></div>
           </div>
         </div>
 
         <!-- Top tests table -->
         <div class="card" style="margin-bottom:24px;">
-          <h3 style="margin-bottom:12px;font-size:14px;color:var(--text-muted);font-weight:600;">PRUEBAS MÁS SOLICITADAS (POR INGRESO)</h3>
+          <h3 class="subsection-title">PRUEBAS MÁS SOLICITADAS (POR INGRESO)</h3>
           <div class="table-wrapper">
             <table class="data-table">
               <thead>
@@ -658,13 +660,13 @@
 
         <!-- P&L y Gastos Fijos -->
         <div id="finance-pnl-section">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-            <h3 style="font-size:14px;color:var(--text-muted);font-weight:600;text-transform:uppercase;">RESULTADO (P&L) — MES ACTUAL</h3>
+          <div class="subsection-row">
+            <h3 class="subsection-title" style="margin-bottom:0">RESULTADO (P&L) — MES ACTUAL</h3>
           </div>
           <div id="finance-pnl-cards" class="pnl-grid"></div>
           <div class="card">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-              <h3 style="font-size:14px;color:var(--text-muted);font-weight:600;">GASTOS FIJOS REGISTRADOS</h3>
+            <div class="subsection-row">
+              <h3 class="subsection-title" style="margin-bottom:0">GASTOS FIJOS REGISTRADOS</h3>
               <button class="btn btn-sm btn-primary" onclick="Finance.openFixedCost()">+ Agregar Gasto</button>
             </div>
             <div class="table-wrapper">
@@ -682,7 +684,7 @@
 
         <!-- Export -->
         <div class="card" style="margin-top:24px;">
-          <h3 style="margin-bottom:12px;font-size:14px;color:var(--text-muted);font-weight:600;">EXPORTAR COBROS</h3>
+          <h3 class="subsection-title">EXPORTAR COBROS</h3>
           <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;">
             <div class="form-group" style="margin:0;">
               <label>Desde</label>
@@ -725,7 +727,7 @@
             <span class="search-icon">🔍</span>
             <input type="text" id="pap-search" placeholder="Buscar paciente o código PAP..." oninput="PapResultados.filtrar()">
           </div>
-          <select id="pap-filter-bethesda" onchange="PapResultados.filtrar()" style="padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:13px;min-width:180px">
+          <select id="pap-filter-bethesda" onchange="PapResultados.filtrar()" class="filter-input" style="min-width:180px">
             <option value="">Todos los resultados</option>
             <option value="NILM">NILM</option>
             <option value="ASCUS">ASCUS</option>
@@ -736,9 +738,9 @@
             <option value="ADENOCARCINOMA">Adenocarcinoma</option>
             <option value="INSATISFACTORIO">Insatisfactorio</option>
           </select>
-          <input type="text" id="pap-filter-ipress" placeholder="IPRESS..." oninput="PapResultados.filtrar()" style="flex:1;min-width:140px;padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:13px">
-          <input type="date" id="pap-filter-desde" onchange="PapResultados.filtrar()" style="padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:13px">
-          <input type="date" id="pap-filter-hasta" onchange="PapResultados.filtrar()" style="padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:13px">
+          <input type="text" id="pap-filter-ipress" placeholder="IPRESS..." oninput="PapResultados.filtrar()" class="filter-input" style="flex:1;min-width:140px">
+          <input type="date" id="pap-filter-desde" onchange="PapResultados.filtrar()" class="filter-input">
+          <input type="date" id="pap-filter-hasta" onchange="PapResultados.filtrar()" class="filter-input">
         </div>
         <div id="pap-resultados-list">
           <div class="table-empty"><span class="empty-icon">📊</span>Cargando resultados...</div>

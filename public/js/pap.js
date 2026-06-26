@@ -61,16 +61,12 @@ const PapPaquetes = (() => {
               <td>${p.fecha_recepcion}</td>
               <td style="text-align:center;font-weight:600">${p.total_laminas}</td>
               <td style="text-align:center">
-                <span style="background:${p.codificados == p.total_laminas ? '#d1fae5' : '#fef3c7'};
-                             color:${p.codificados == p.total_laminas ? '#065f46' : '#92400e'};
-                             padding:2px 8px;border-radius:4px;font-size:12px;font-weight:600">
+                <span class="badge ${p.codificados == p.total_laminas ? 'badge-DELIVERED' : 'badge-IN_PROCESS'}">
                   ${p.codificados || 0}/${p.total_laminas}
                 </span>
               </td>
               <td style="text-align:center">
-                <span style="background:${p.estado === 'COMPLETADO' ? '#d1fae5' : '#fef3c7'};
-                             color:${p.estado === 'COMPLETADO' ? '#065f46' : '#92400e'};
-                             padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600">
+                <span class="badge ${p.estado === 'COMPLETADO' ? 'badge-DELIVERED' : 'badge-IN_PROCESS'}">
                   ${p.estado}
                 </span>
               </td>

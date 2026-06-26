@@ -222,6 +222,25 @@ const App = (() => {
     setTimeout(() => showSection(next), 900);
   }
 
+  // ─── Paginación genérica (client-side, sobre listas ya cargadas) ───────
+  function paginate(items, page, pageSize) {
+    const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
+    const safePage = Math.min(Math.max(1, page), totalPages);
+    const start = (safePage - 1) * pageSize;
+    return { pageItems: items.slice(start, start + pageSize), totalPages, page: safePage, total: items.length };
+  }
+
+  function renderPager(containerId, page, totalPages, onPrev, onNext) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    if (totalPages <= 1) { el.innerHTML = ''; return; }
+    el.innerHTML = `
+      <button class="btn btn-sm btn-outline" ${page <= 1 ? 'disabled' : ''} onclick="${onPrev}">‹ Anterior</button>
+      <span class="pager-info">Página ${page} de ${totalPages}</span>
+      <button class="btn btn-sm btn-outline" ${page >= totalPages ? 'disabled' : ''} onclick="${onNext}">Siguiente ›</button>
+    `;
+  }
+
   function roleLabel(role) {
     const labels = {
       ADMIN:        'Administrador',
@@ -367,7 +386,7 @@ const App = (() => {
   return {
     init, showSection, openModal, closeModal, closeModalOverlay,
     toast, getUser, formatDate, formatDateTime, calcAge, statusBadge, flagBadge,
-    workflowAdvance
+    workflowAdvance, paginate, renderPager
   };
 })();
 

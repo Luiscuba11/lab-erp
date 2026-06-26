@@ -3,15 +3,28 @@
 
 const Patients = (() => {
   let searchTimer = null;
+  let allPatients = [];
+  let currentPage = 1;
+  const PAGE_SIZE = 15;
 
   async function load(query = '') {
     try {
-      const patients = await API.getPatients(query);
-      render(patients);
+      allPatients = await API.getPatients(query);
+      currentPage = 1;
+      renderPage();
     } catch (err) {
       App.toast('Error al cargar pacientes: ' + err.message, 'error');
     }
   }
+
+  function renderPage() {
+    const { pageItems, totalPages, page } = App.paginate(allPatients, currentPage, PAGE_SIZE);
+    render(pageItems);
+    App.renderPager('patients-pager', page, totalPages, 'Patients.prevPage()', 'Patients.nextPage()');
+  }
+
+  function prevPage() { currentPage--; renderPage(); }
+  function nextPage() { currentPage++; renderPage(); }
 
   function search(query) {
     clearTimeout(searchTimer);
@@ -238,5 +251,5 @@ const Patients = (() => {
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  return { load, search, openCreate, openEdit, submit, viewHistory, buscarDNI };
+  return { load, search, prevPage, nextPage, openCreate, openEdit, submit, viewHistory, buscarDNI };
 })();
