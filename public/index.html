@@ -284,6 +284,10 @@
             <p>Crear y seguir órdenes de laboratorio</p>
           </div>
           <div class="flex gap-2 items-center">
+            <div class="search-bar">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="orders-search" placeholder="Buscar por N° orden o paciente..." oninput="Orders.search(this.value)">
+            </div>
             <select id="order-status-filter" onchange="Orders.load()" style="padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:13px;">
               <option value="">Todos los Estados</option>
               <option value="PENDING">Pendiente</option>
@@ -315,7 +319,13 @@
             <h2>Ingreso de Resultados</h2>
             <p>Ingresar resultados de pruebas para órdenes pendientes</p>
           </div>
-          <button class="btn btn-outline btn-sm" onclick="Results.loadEntry()">↻ Actualizar</button>
+          <div class="flex gap-2 items-center">
+            <div class="search-bar">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="results-entry-search" placeholder="Buscar por N° orden o paciente..." oninput="Results.searchEntry(this.value)">
+            </div>
+            <button class="btn btn-outline btn-sm" onclick="Results.loadEntry()">↻ Actualizar</button>
+          </div>
         </div>
         <div class="card">
           <div class="table-wrapper">
@@ -338,7 +348,13 @@
             <h2>Validación de Resultados</h2>
             <p>Revisar y validar resultados ingresados</p>
           </div>
-          <button class="btn btn-outline btn-sm" onclick="Results.loadValidation()">↻ Actualizar</button>
+          <div class="flex gap-2 items-center">
+            <div class="search-bar">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="results-validation-search" placeholder="Buscar por N° orden o paciente..." oninput="Results.searchValidation(this.value)">
+            </div>
+            <button class="btn btn-outline btn-sm" onclick="Results.loadValidation()">↻ Actualizar</button>
+          </div>
         </div>
         <div class="card">
           <div class="table-wrapper">
@@ -503,7 +519,13 @@
             <h2>Gestión de Usuarios</h2>
             <p>Administrar usuarios y roles del sistema</p>
           </div>
-          <button class="btn btn-primary" onclick="Users.openCreate()">+ Agregar Usuario</button>
+          <div class="flex gap-2 items-center">
+            <div class="search-bar">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="users-search" placeholder="Buscar por nombre o usuario..." oninput="Users.search(this.value)">
+            </div>
+            <button class="btn btn-primary" onclick="Users.openCreate()">+ Agregar Usuario</button>
+          </div>
         </div>
         <div class="card">
           <div class="table-wrapper">

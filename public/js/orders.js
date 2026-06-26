@@ -4,15 +4,30 @@
 const Orders = (() => {
   let allTests = [];
   let patientSearchTimer = null;
+  let lastOrders = [];
 
   async function load() {
     const status = document.getElementById('order-status-filter')?.value || '';
     try {
       const orders = await API.getOrders({ status });
-      render(orders);
+      lastOrders = orders;
+      render(filterBySearch(orders, document.getElementById('orders-search')?.value || ''));
     } catch (err) {
       App.toast('Error al cargar órdenes: ' + err.message, 'error');
     }
+  }
+
+  function filterBySearch(orders, query) {
+    const q = query.trim().toLowerCase();
+    if (!q) return orders;
+    return orders.filter(o =>
+      (o.order_number || '').toLowerCase().includes(q) ||
+      (o.patient_name || '').toLowerCase().includes(q)
+    );
+  }
+
+  function search(query) {
+    render(filterBySearch(lastOrders, query));
   }
 
   function payLabel(status) {
@@ -375,5 +390,5 @@ const Orders = (() => {
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  return { load, openCreate, searchPatient, selectPatient, clearPatient, submit, openDetail, updateTestCount, filterTests, toggleTest, renderPriceSummary, enviarWhatsApp };
+  return { load, search, openCreate, searchPatient, selectPatient, clearPatient, submit, openDetail, updateTestCount, filterTests, toggleTest, renderPriceSummary, enviarWhatsApp };
 })();

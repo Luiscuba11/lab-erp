@@ -3,6 +3,7 @@
 
 const Users = (() => {
   let editingId = null;
+  let lastUsers = [];
 
   const ROLE_LABELS = {
     RECEPTIONIST: 'Recepcionista',
@@ -16,10 +17,24 @@ const Users = (() => {
     if (tbodyLoad) tbodyLoad.innerHTML = `<tr><td colspan="6" class="table-empty">Cargando...</td></tr>`;
     try {
       const users = await API.getUsers();
-      render(users);
+      lastUsers = users;
+      render(filterBySearch(users, document.getElementById('users-search')?.value || ''));
     } catch (err) {
       App.toast('Error al cargar usuarios: ' + err.message, 'error');
     }
+  }
+
+  function filterBySearch(users, query) {
+    const q = query.trim().toLowerCase();
+    if (!q) return users;
+    return users.filter(u =>
+      (u.full_name || '').toLowerCase().includes(q) ||
+      (u.username  || '').toLowerCase().includes(q)
+    );
+  }
+
+  function search(query) {
+    render(filterBySearch(lastUsers, query));
   }
 
   function render(users) {
@@ -150,5 +165,5 @@ const Users = (() => {
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  return { load, openCreate, openEdit, submit, toggleActive };
+  return { load, search, openCreate, openEdit, submit, toggleActive };
 })();

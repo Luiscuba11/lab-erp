@@ -4,6 +4,17 @@
 const Results = (() => {
   let currentOrder = null;
   let currentRefRanges = {};
+  let lastEntryOrders = [];
+  let lastValidationOrders = [];
+
+  function filterBySearch(orders, query) {
+    const q = query.trim().toLowerCase();
+    if (!q) return orders;
+    return orders.filter(o =>
+      (o.order_number || '').toLowerCase().includes(q) ||
+      (o.patient_name || '').toLowerCase().includes(q)
+    );
+  }
 
   // ─── Results Entry (Technician) ──────────────────────────────────────────
 
@@ -14,10 +25,15 @@ const Results = (() => {
       // Show orders that need results entered (PENDING or IN_PROCESS)
       const orders = await API.getOrders({ limit: 100 });
       const pending = orders.filter(o => o.status === 'PENDING' || o.status === 'IN_PROCESS');
-      renderEntryList(pending);
+      lastEntryOrders = pending;
+      renderEntryList(filterBySearch(pending, document.getElementById('results-entry-search')?.value || ''));
     } catch (err) {
       App.toast('Error al cargar órdenes: ' + err.message, 'error');
     }
+  }
+
+  function searchEntry(query) {
+    renderEntryList(filterBySearch(lastEntryOrders, query));
   }
 
   function renderEntryList(orders) {
@@ -417,10 +433,15 @@ const Results = (() => {
       const toValidate = orders.filter(o =>
         o.status === 'IN_PROCESS' || o.status === 'COMPLETED'
       );
-      renderValidationList(toValidate);
+      lastValidationOrders = toValidate;
+      renderValidationList(filterBySearch(toValidate, document.getElementById('results-validation-search')?.value || ''));
     } catch (err) {
       App.toast('Error al cargar órdenes: ' + err.message, 'error');
     }
+  }
+
+  function searchValidation(query) {
+    renderValidationList(filterBySearch(lastValidationOrders, query));
   }
 
   function renderValidationList(orders) {
@@ -611,8 +632,8 @@ const Results = (() => {
   }
 
   return {
-    loadEntry, openEntryModal, updateFlag, saveEntries,
-    loadValidation, openValidationModal, validateSingle, validateAll,
+    loadEntry, searchEntry, openEntryModal, updateFlag, saveEntries,
+    loadValidation, searchValidation, openValidationModal, validateSingle, validateAll,
     updateParamFlag, selectSemiQuant
   };
 })();
