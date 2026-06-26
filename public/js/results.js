@@ -8,6 +8,8 @@ const Results = (() => {
   // ─── Results Entry (Technician) ──────────────────────────────────────────
 
   async function loadEntry() {
+    const tbodyLoad = document.getElementById('results-entry-tbody');
+    if (tbodyLoad) tbodyLoad.innerHTML = `<tr><td colspan="6" class="table-empty">Cargando...</td></tr>`;
     try {
       // Show orders that need results entered (PENDING or IN_PROCESS)
       const orders = await API.getOrders({ limit: 100 });
@@ -407,6 +409,8 @@ const Results = (() => {
   // ─── Validation (Biochemist) ─────────────────────────────────────────────
 
   async function loadValidation() {
+    const tbodyLoad = document.getElementById('results-validation-tbody');
+    if (tbodyLoad) tbodyLoad.innerHTML = `<tr><td colspan="6" class="table-empty">Cargando...</td></tr>`;
     try {
       const orders = await API.getOrders({ limit: 100 });
       // Show orders that have at least some results entered

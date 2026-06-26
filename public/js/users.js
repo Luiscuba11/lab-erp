@@ -12,6 +12,8 @@ const Users = (() => {
   };
 
   async function load() {
+    const tbodyLoad = document.getElementById('users-tbody');
+    if (tbodyLoad) tbodyLoad.innerHTML = `<tr><td colspan="6" class="table-empty">Cargando...</td></tr>`;
     try {
       const users = await API.getUsers();
       render(users);

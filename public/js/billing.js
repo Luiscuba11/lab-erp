@@ -45,6 +45,8 @@ const Billing = (() => {
   }
 
   async function loadPending() {
+    const tbodyLoad = document.getElementById('billing-pending-tbody');
+    if (tbodyLoad) tbodyLoad.innerHTML = `<tr><td colspan="7" class="table-empty">Cargando...</td></tr>`;
     try {
       const orders = await API.getBillingPending();
       renderPending(orders);
@@ -81,6 +83,8 @@ const Billing = (() => {
   async function loadHistory() {
     const from = document.getElementById('billing-from')?.value;
     const to   = document.getElementById('billing-to')?.value;
+    const tbodyLoad = document.getElementById('billing-history-tbody');
+    if (tbodyLoad) tbodyLoad.innerHTML = `<tr><td colspan="7" class="table-empty">Cargando...</td></tr>`;
     try {
       const orders = await API.getBillingHistory(from, to);
       renderHistory(orders);

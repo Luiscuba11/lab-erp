@@ -294,7 +294,7 @@ const Orders = (() => {
     const body  = document.getElementById('result-modal-body');
     const btn   = document.getElementById('btn-save-results');
 
-    title.textContent = `Order ${order.order_number}`;
+    title.textContent = `Orden ${order.order_number}`;
     btn.classList.add('hidden');
 
     const patientAge = App.calcAge(order.patient_dob);

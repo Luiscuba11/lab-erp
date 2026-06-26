@@ -4,6 +4,8 @@
 const Dashboard = (() => {
 
   async function load() {
+    const tbodyLoad = document.getElementById('recent-orders-tbody');
+    if (tbodyLoad) tbodyLoad.innerHTML = `<tr><td colspan="5" class="table-empty">Cargando...</td></tr>`;
     try {
       const data = await API.getDashboardStats();
       renderStats(data);
