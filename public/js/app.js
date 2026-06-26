@@ -5,43 +5,60 @@ const App = (() => {
   let currentUser = null;
   let currentSection = 'dashboard';
 
+  // ─── Iconos SVG de línea (trazo = currentColor) por módulo ─────────────
+  const ICONS = {
+    dashboard: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/></svg>',
+    patients: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c0-3.6 3.1-6.4 7-6.4s7 2.8 7 6.4"/></svg>',
+    orders: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4V3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1"/><path d="M9 11h6M9 15h6"/></svg>',
+    results: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2v8.5L4.5 19a2 2 0 0 0 1.8 3h11.4a2 2 0 0 0 1.8-3L15 10.5V2"/><path d="M9 2h6M7.5 14h9"/></svg>',
+    validation: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8.5 12.5l2.5 2.5 5-5.5"/></svg>',
+    catalog: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2v6L4.3 18.5A1.6 1.6 0 0 0 5.8 21h12.4a1.6 1.6 0 0 0 1.5-2.5L15 8V2"/><path d="M9 2h6M5.5 16h13"/></svg>',
+    supplies: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l9-5 9 5-9 5-9-5Z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg>',
+    users: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.6"/><path d="M16 13.2c2.6.4 4.5 2.6 4.5 5.3"/></svg>',
+    billing: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6" width="19" height="13" rx="2"/><circle cx="12" cy="12.5" r="3"/><path d="M2.5 9.5h4M17.5 9.5h4M2.5 15.5h4M17.5 15.5h4"/></svg>',
+    finance: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V9M11 19V4M18 19v-6"/><path d="M2.5 19h19"/></svg>',
+    'pap-generator': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21h6M11 17h2"/><path d="M9.5 17c-1.2-1-2-2.7-2-4.6C7.5 8.6 9.6 5 12 5s4.5 3.6 4.5 7.4c0 1.9-.8 3.6-2 4.6"/><path d="M9.5 9.5h5"/><circle cx="18.5" cy="5.5" r="2"/></svg>',
+    'pap-paquetes': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l9-4 9 4-9 4-9-4Z"/><path d="M3 12l9 4 9-4M3 17l9 4 9-4"/></svg>',
+    'pap-resultados': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>'
+  };
+
   // ─── Navigation config per role ────────────────────────────────────────
   const NAV_CONFIG = {
     RECEPTIONIST: [
-      { id: 'dashboard', label: 'Panel Principal',         icon: '📊' },
-      { id: 'patients',  label: 'Pacientes',               icon: '👤' },
-      { id: 'orders',    label: 'Órdenes',                 icon: '📋' },
-      { id: 'billing',   label: 'Caja / Cobros',           icon: '💰' },
+      { id: 'dashboard', label: 'Panel Principal' },
+      { id: 'patients',  label: 'Pacientes' },
+      { id: 'orders',    label: 'Órdenes' },
+      { id: 'billing',   label: 'Caja / Cobros' },
     ],
     TECHNICIAN: [
-      { id: 'dashboard',        label: 'Panel Principal',         icon: '📊' },
-      { id: 'results',          label: 'Ingreso de Resultados',   icon: '🧪' },
-      { id: 'supplies',         label: 'Control de Insumos',      icon: '📦' },
-      { url: '/pap-generator',  label: 'Generador PAP',           icon: '🦠' },
-      { id: 'pap-paquetes',     label: 'Paquetes PAP',            icon: '🔬' },
-      { id: 'pap-resultados',   label: 'Banco de Resultados PAP', icon: '📊' },
+      { id: 'dashboard',        label: 'Panel Principal' },
+      { id: 'results',          label: 'Ingreso de Resultados' },
+      { id: 'supplies',         label: 'Control de Insumos' },
+      { url: '/pap-generator', id: 'pap-generator', label: 'Generador PAP' },
+      { id: 'pap-paquetes',     label: 'Paquetes PAP' },
+      { id: 'pap-resultados',   label: 'Banco de Resultados PAP' },
     ],
     BIOCHEMIST: [
-      { id: 'dashboard',        label: 'Panel Principal',         icon: '📊' },
-      { id: 'validation',       label: 'Validación',              icon: '✅' },
-      { url: '/pap-generator',  label: 'Generador PAP',           icon: '🦠' },
-      { id: 'pap-paquetes',     label: 'Paquetes PAP',            icon: '🔬' },
-      { id: 'pap-resultados',   label: 'Banco de Resultados PAP', icon: '📊' },
+      { id: 'dashboard',        label: 'Panel Principal' },
+      { id: 'validation',       label: 'Validación' },
+      { url: '/pap-generator', id: 'pap-generator', label: 'Generador PAP' },
+      { id: 'pap-paquetes',     label: 'Paquetes PAP' },
+      { id: 'pap-resultados',   label: 'Banco de Resultados PAP' },
     ],
     ADMIN: [
-      { id: 'dashboard',        label: 'Panel Principal',         icon: '🏠' },
-      { id: 'patients',         label: 'Pacientes',               icon: '👤' },
-      { id: 'orders',           label: 'Órdenes',                 icon: '📋' },
-      { id: 'results',          label: 'Ingreso de Resultados',   icon: '🧪' },
-      { id: 'validation',       label: 'Validación',              icon: '✅' },
-      { id: 'catalog',          label: 'Catálogo de Pruebas',     icon: '🔬' },
-      { id: 'supplies',         label: 'Control de Insumos',      icon: '📦' },
-      { id: 'users',            label: 'Usuarios',                icon: '👥' },
-      { id: 'billing',          label: 'Caja / Cobros',           icon: '💰' },
-      { id: 'finance',          label: 'Finanzas',                icon: '📊' },
-      { url: '/pap-generator',  label: 'Generador PAP',           icon: '🦠' },
-      { id: 'pap-paquetes',     label: 'Paquetes PAP',            icon: '🔬' },
-      { id: 'pap-resultados',   label: 'Banco de Resultados PAP', icon: '📊' },
+      { id: 'dashboard',        label: 'Panel Principal' },
+      { id: 'patients',         label: 'Pacientes' },
+      { id: 'orders',           label: 'Órdenes' },
+      { id: 'results',          label: 'Ingreso de Resultados' },
+      { id: 'validation',       label: 'Validación' },
+      { id: 'catalog',          label: 'Catálogo de Pruebas' },
+      { id: 'supplies',         label: 'Control de Insumos' },
+      { id: 'users',            label: 'Usuarios' },
+      { id: 'billing',          label: 'Caja / Cobros' },
+      { id: 'finance',          label: 'Finanzas' },
+      { url: '/pap-generator', id: 'pap-generator', label: 'Generador PAP' },
+      { id: 'pap-paquetes',     label: 'Paquetes PAP' },
+      { id: 'pap-resultados',   label: 'Banco de Resultados PAP' },
     ]
   };
 
@@ -135,12 +152,12 @@ const App = (() => {
     nav.innerHTML = items.map(item => item.url
       ? `<a href="${item.url}" target="_blank" rel="noopener noreferrer"
             id="nav-${item.url.replace(/\//g,'-').replace(/^-/,'')}"
-            style="display:flex;align-items:center;gap:10px;padding:10px 16px;margin:4px 8px;border-radius:8px;text-decoration:none;color:#4ade80;background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.3);font-size:13px;font-weight:600;transition:all 0.2s ease;"
-            onmouseenter="this.style.background='rgba(74,222,128,0.25)';this.style.borderColor='rgba(74,222,128,0.7)';this.style.color='#86efac';this.style.transform='translateX(3px)'"
-            onmouseleave="this.style.background='rgba(74,222,128,0.1)';this.style.borderColor='rgba(74,222,128,0.3)';this.style.color='#4ade80';this.style.transform='translateX(0)'"
-         >${item.icon} <span>${item.label}</span></a>`
+            style="display:flex;align-items:center;gap:8px;padding:8px 12px;margin:0 2px;border-radius:8px;text-decoration:none;color:#4ade80;background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.3);font-size:13px;font-weight:600;transition:all 0.2s ease;flex-shrink:0;white-space:nowrap;"
+            onmouseenter="this.style.background='rgba(74,222,128,0.25)';this.style.borderColor='rgba(74,222,128,0.7)';this.style.color='#86efac'"
+            onmouseleave="this.style.background='rgba(74,222,128,0.1)';this.style.borderColor='rgba(74,222,128,0.3)';this.style.color='#4ade80'"
+         ><span class="nav-icon" style="width:16px;height:16px;display:inline-flex">${ICONS[item.id]||''}</span> <span>${item.label}</span></a>`
       : `<div class="nav-item" id="nav-${item.id}" data-section="${item.id}" tabindex="0" role="button">
-           <span class="nav-icon">${item.icon}</span>
+           <span class="nav-icon">${ICONS[item.id]||''}</span>
            <span class="nav-label">${item.label}</span>
          </div>`
     ).join('');
@@ -172,11 +189,11 @@ const App = (() => {
     const items = (NAV_CONFIG[user.role] || []).filter(item => item.id !== 'dashboard');
     grid.innerHTML = items.map(item => item.url
       ? `<a href="${item.url}" target="_blank" rel="noopener noreferrer" class="app-tile">
-           <span class="app-tile-icon">${item.icon}</span>
+           <span class="app-tile-icon">${ICONS[item.id]||''}</span>
            <span class="app-tile-label">${item.label}</span>
          </a>`
       : `<div class="app-tile" data-section="${item.id}" tabindex="0" role="button">
-           <span class="app-tile-icon">${item.icon}</span>
+           <span class="app-tile-icon">${ICONS[item.id]||''}</span>
            <span class="app-tile-label">${item.label}</span>
          </div>`
     ).join('');

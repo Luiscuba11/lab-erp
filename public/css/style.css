@@ -423,12 +423,16 @@ a.nav-item {
 }
 
 .nav-item .nav-icon {
-  font-size: 16px;
   flex-shrink: 0;
   width: 18px;
-  text-align: center;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   opacity: .85;
 }
+
+.nav-item .nav-icon svg { width: 17px; height: 17px; }
 
 .nav-item.active .nav-icon { opacity: 1; }
 
@@ -547,8 +551,8 @@ a.nav-item {
    ═══════════════════════════════════════════════════════════════════════════ */
 .apps-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(124px, 1fr));
+  gap: 12px;
   margin-bottom: 28px;
 }
 
@@ -556,24 +560,38 @@ a.nav-item {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg, 14px);
-  padding: 18px 10px 14px;
+  padding: 20px 10px 16px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   cursor: pointer;
   text-decoration: none;
   color: var(--text);
   transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
   text-align: center;
   user-select: none;
+  position: relative;
+}
+
+.app-tile::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 16px; right: 16px;
+  height: 2px;
+  border-radius: 0 0 3px 3px;
+  background: var(--primary);
+  opacity: 0;
+  transition: opacity .15s ease;
 }
 
 .app-tile:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(29,78,216,.12);
+  box-shadow: 0 10px 22px rgba(29,78,216,.10);
   border-color: var(--primary);
 }
+
+.app-tile:hover::before { opacity: 1; }
 
 .app-tile:focus-visible {
   outline: 2px solid var(--primary);
@@ -581,20 +599,26 @@ a.nav-item {
 }
 
 .app-tile .app-tile-icon {
-  font-size: 30px;
-  width: 58px;
-  height: 58px;
+  width: 52px;
+  height: 52px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 14px;
-  background: var(--vbg, #e8f5ee);
+  border-radius: 13px;
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+.app-tile .app-tile-icon svg {
+  width: 24px;
+  height: 24px;
 }
 
 .app-tile .app-tile-label {
   font-size: 12.5px;
   font-weight: 600;
   line-height: 1.25;
+  color: var(--slate-700);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -670,27 +694,27 @@ a.nav-item {
 .stat-card {
   background: var(--surface);
   border-radius: var(--radius-lg);
-  padding: 20px 20px 18px;
-  box-shadow: var(--shadow);
+  padding: 18px 20px 18px 22px;
+  box-shadow: none;
   border: 1px solid var(--border);
   position: relative;
   overflow: hidden;
-  transition: box-shadow var(--transition), transform var(--transition);
+  transition: box-shadow var(--transition), transform var(--transition), border-color var(--transition);
 }
 
 .stat-card:hover {
   box-shadow: var(--shadow-md);
   transform: translateY(-2px);
+  border-color: var(--primary);
 }
 
-/* Colored accent bar */
+/* Barra lateral de acento (estilo "ficha clínica") en vez de borde superior */
 .stat-card::after {
   content: '';
   position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 3px;
+  top: 0; left: 0; bottom: 0;
+  width: 4px;
   background: var(--primary);
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
 
 .stat-card.green::after  { background: var(--success); }
@@ -720,6 +744,7 @@ a.nav-item {
   line-height: 1;
   letter-spacing: -1px;
   margin-bottom: 6px;
+  font-feature-settings: 'tnum' 1;
 }
 
 .stat-sub { font-size: 12px; color: var(--text-muted); }
