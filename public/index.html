@@ -109,9 +109,9 @@
           <div class="user-role" id="sidebar-role">—</div>
         </div>
       </div>
-      <button class="btn btn-block btn-sm" id="logout-btn" style="background:rgba(255,255,255,.08);color:#94a3b8;border:1px solid rgba(255,255,255,.1);font-size:12px;letter-spacing:.3px;border-radius:8px;justify-content:center;">
+      <button class="btn btn-sm" id="logout-btn" style="background:rgba(255,255,255,.08);color:#94a3b8;border:1px solid rgba(255,255,255,.1);font-size:12px;letter-spacing:.3px;border-radius:8px;justify-content:center;white-space:nowrap;flex-shrink:0;">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:2px"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        Cerrar Sesión
+        Salir
       </button>
     </div>
   </aside>
@@ -172,6 +172,9 @@
           </div>
           <button class="btn btn-outline btn-sm" onclick="Dashboard.load()">↻ Actualizar</button>
         </div>
+
+        <!-- Apps (acceso rápido por módulo, según rol) -->
+        <div class="apps-grid" id="apps-grid"></div>
 
         <div class="stats-grid" id="stats-grid">
           <div class="stat-card">

@@ -395,6 +395,7 @@ const Results = (() => {
       App.toast(`${saved} resultado(s) guardado(s) correctamente`, 'success');
       App.closeModal('modal-overlay-result');
       loadEntry();
+      App.workflowAdvance('results');
     } catch (err) {
       App.toast('Error al guardar resultados: ' + err.message, 'error');
     } finally {

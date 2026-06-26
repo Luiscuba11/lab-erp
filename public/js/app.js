@@ -112,6 +112,7 @@ const App = (() => {
   function loginSuccess(user) {
     currentUser = user;
     buildSidebar(user);
+    buildAppsGrid(user);
     updateUserChip(user);
     document.getElementById('login-page').classList.add('hidden');
     document.getElementById('app').classList.remove('hidden');
@@ -146,6 +147,43 @@ const App = (() => {
     nav.querySelectorAll('.nav-item[data-section]').forEach(function(el) {
       el.addEventListener('click', function() { App.showSection(el.getAttribute('data-section')); });
     });
+  }
+
+  // ─── Apps grid (Panel Principal estilo Odoo) ───────────────────────────
+  function buildAppsGrid(user) {
+    const grid = document.getElementById('apps-grid');
+    if (!grid) return;
+    const items = (NAV_CONFIG[user.role] || []).filter(item => item.id !== 'dashboard');
+    grid.innerHTML = items.map(item => item.url
+      ? `<a href="${item.url}" target="_blank" rel="noopener noreferrer" class="app-tile">
+           <span class="app-tile-icon">${item.icon}</span>
+           <span class="app-tile-label">${item.label}</span>
+         </a>`
+      : `<div class="app-tile" data-section="${item.id}">
+           <span class="app-tile-icon">${item.icon}</span>
+           <span class="app-tile-label">${item.label}</span>
+         </div>`
+    ).join('');
+    grid.querySelectorAll('.app-tile[data-section]').forEach(function(el) {
+      el.addEventListener('click', function() { App.showSection(el.getAttribute('data-section')); });
+    });
+  }
+
+  // ─── Flujo automático: al terminar un paso, avanzar al siguiente según rol ─
+  const WORKFLOW_NEXT = {
+    RECEPTIONIST: { patients: 'orders', orders: 'billing' },
+    TECHNICIAN:   { results: 'dashboard' },
+    ADMIN:        { patients: 'orders', orders: 'billing' },
+  };
+
+  function workflowAdvance(fromSection) {
+    if (!currentUser) return;
+    const next = (WORKFLOW_NEXT[currentUser.role] || {})[fromSection];
+    if (!next) return;
+    const allowed = (NAV_CONFIG[currentUser.role] || []).some(i => i.id === next);
+    if (!allowed) return;
+    toast(`Avanzando automáticamente a "${next === 'billing' ? 'Caja / Cobros' : next === 'orders' ? 'Órdenes' : next === 'dashboard' ? 'Panel Principal' : next}"…`, 'success');
+    setTimeout(() => showSection(next), 900);
   }
 
   function roleLabel(role) {
@@ -280,44 +318,11 @@ const App = (() => {
   // ─── Expose ──────────────────────────────────────────────────────────────
   return {
     init, showSection, openModal, closeModal, closeModalOverlay,
-    toast, getUser, formatDate, formatDateTime, calcAge, statusBadge, flagBadge
+    toast, getUser, formatDate, formatDateTime, calcAge, statusBadge, flagBadge,
+    workflowAdvance
   };
 })();
 
 // Boot on DOM ready
 document.addEventListener('DOMContentLoaded', () => App.init());
 
-// ─── Mobile sidebar drawer ────────────────────────────────────────────────
-(function initMobileDrawer() {
-  const toggle   = document.getElementById('menu-toggle');
-  const sidebar  = document.querySelector('.sidebar, aside');
-  const overlay  = document.getElementById('sidebar-overlay');
-  if (!toggle || !sidebar) return;
-
-  function openDrawer() {
-    sidebar.classList.add('open');
-    if (overlay) overlay.classList.add('active');
-    document.body.style.overflow = 'hidden';
-  }
-
-  function closeDrawer() {
-    sidebar.classList.remove('open');
-    if (overlay) overlay.classList.remove('active');
-    document.body.style.overflow = '';
-  }
-
-  toggle.addEventListener('click', function() {
-    sidebar.classList.contains('open') ? closeDrawer() : openDrawer();
-  });
-
-  if (overlay) overlay.addEventListener('click', closeDrawer);
-
-  document.addEventListener('click', function(e) {
-    const navItem = e.target.closest('.nav-item');
-    if (navItem && window.innerWidth <= 768) closeDrawer();
-  });
-
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') closeDrawer();
-  });
-})();

@@ -272,6 +272,7 @@ const Orders = (() => {
       App.toast(`Orden ${order.order_number} creada`, 'success');
       App.closeModal('modal-overlay-order');
       load();
+      App.workflowAdvance('orders');
     } catch (err) {
       App.toast(err.message, 'error');
     }

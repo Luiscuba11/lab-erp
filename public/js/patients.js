@@ -114,6 +114,7 @@ const Patients = (() => {
       } else {
         await API.createPatient({ name, dob, gender, id_number: id_num, contact });
         App.toast('Paciente registrado correctamente', 'success');
+        App.workflowAdvance('patients');
       }
       App.closeModal('modal-overlay-patient');
       load(document.getElementById('patient-search').value);
